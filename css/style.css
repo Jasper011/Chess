@@ -1,0 +1,133 @@
+.content {
+  width: 676px;
+  margin: 0 auto;
+  display: flex; }
+
+.boardWrapper {
+  width: 640px; }
+
+#chessDesk {
+  border: 1px solid black;
+  width: 640px;
+  height: 640px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr); }
+  #chessDesk .line:nth-child(2n) .chessDeskCage:nth-child(2n) {
+    background-color: #616161; }
+  #chessDesk .line:nth-child(2n - 1) .chessDeskCage:nth-child(2n-1) {
+    background-color: #616161; }
+  #chessDesk .chessDeskCage {
+    width: 80px;
+    height: 80px;
+    box-sizing: border-box; }
+    #chessDesk .chessDeskCage.highlight {
+      box-shadow: 0 0 101px 100px rgba(0, 255, 19, 0.28) inset; }
+    #chessDesk .chessDeskCage:nth-child(2) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(4) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(6) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(8) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(9) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(11) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(13) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(15) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(18) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(20) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(22) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(24) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(25) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(27) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(29) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(31) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(34) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(36) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(38) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(40) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(41) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(43) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(45) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(47) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(50) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(52) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(54) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(56) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(57) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(59) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(61) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage:nth-child(63) {
+      background-color: #616161; }
+    #chessDesk .chessDeskCage .figure {
+      width: 100%;
+      height: 100%; }
+      #chessDesk .chessDeskCage .figure img {
+        height: 100%;
+        margin: 0 auto;
+        display: block; }
+    #chessDesk .chessDeskCage .figure.active {
+      position: relative;
+      bottom: 5px; }
+
+.topIndex {
+  width: 100%;
+  display: flex;
+  justify-items: space-between;
+  padding: 5px 0; }
+  .topIndexLetter {
+    width: 82px;
+    text-align: center; }
+
+.botIndex {
+  width: 100%;
+  display: flex;
+  justify-items: space-between; }
+  .botIndexLetter {
+    width: 82px;
+    text-align: center;
+    padding: 5px 0; }
+
+.leftIndex {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 5px; }
+  .leftIndexNum {
+    height: 80px;
+    line-height: 80px; }
+
+.rightIndex {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 5px; }
+  .rightIndexNum {
+    height: 80px;
+    line-height: 80px; }

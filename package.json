@@ -1,0 +1,15 @@
+{
+  "name": "chess",
+  "version": "1.0.0",
+  "main": "index.html",
+  "scripts": {
+    "watch:sass": "node-sass --watch sass -o css",
+    "sass": "node-sass sass -o css"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "node-sass": "^9.0.0"
+  }
+}
