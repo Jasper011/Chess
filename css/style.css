@@ -21,8 +21,10 @@
     width: 80px;
     height: 80px;
     box-sizing: border-box; }
-    #chessDesk .chessDeskCage.highlight {
+    #chessDesk .chessDeskCage.moveHighlight {
       box-shadow: 0 0 101px 100px rgba(0, 255, 19, 0.28) inset; }
+    #chessDesk .chessDeskCage.takeHighlight {
+      box-shadow: 0 0 101px 100px rgba(255, 0, 19, 0.28) inset; }
     #chessDesk .chessDeskCage:nth-child(2) {
       background-color: #616161; }
     #chessDesk .chessDeskCage:nth-child(4) {

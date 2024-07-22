@@ -25,6 +25,7 @@ class Figure {
         this.type = type;
         this.color = color;
         this.moves = [];
+        this.isActive = false;
         this.figure = this._create()
         this.figure.classList.add('figure')
         this.figure.classList.add(this.type)
@@ -33,7 +34,7 @@ class Figure {
     _create(){
         let figure = document.createElement('div');
         figure.classList.add(this.type);
-        figure.innerHTML = `<img src="img/${this.type.toLowerCase()}.png" alt="img/${this.type.toLowerCase()}.png">`;
+        figure.innerHTML = `<img src="img/${this.color}/${this.type.toLowerCase()}.png" alt="img/${this.type.toLowerCase()}.png">`;
         return figure
     }
 
@@ -44,7 +45,7 @@ class Figure {
             cages
                 .find(el=> el.dataset.cageName === coord)
                 .append(this.figure);
-            state[coord] = this.color + this.type
+            state[coord] = this.color + ' ' + this.type
             for (let figure of state.figures) {
                 figure.calcMoves()
             }
@@ -67,29 +68,41 @@ class Figure {
                 this.figure.classList.add('active')
 
             })
+            this.figure.addEventListener('click', e => {
+                this.isActive = true;
+            })
             chessDesk.addEventListener('click', function move(e){
                 const cageName = e.target.dataset.cageName;
-                if (this.moves.includes(cageName)){
+                if (this.moves.map(move=>move.split(' ')[0]).includes(cageName) && this.isActive){
                     this.place(cageName)
+                    this.figure.classList.remove('active')
+                    this.isActive = false;
                     chessDesk.removeEventListener('click', move);
                 }
             }.bind(this))
+
         }
     }
 
     _showMoves(){
         this.moves.forEach(move => {
+            const moveCord = move.split(' ')[0]
+            const typeOfMove = move.split(' ')[1]
             cages
-                .find(cage=> cage.dataset.cageName === move).classList
-                .add('highlight');
+                .find(cage=> cage.dataset.cageName === moveCord).classList
+                .add(`${typeOfMove}Highlight`);
+
         })
     }
 
     _hideMoves(){
         this.moves.forEach(move => {
+            const moveCord = move.split(' ')[0]
+            const typeOfMove = move.split(' ')[1]
             cages
-                .find(cage=> cage.dataset.cageName === move).classList
-                .remove('highlight');
+                .find(cage=> cage.dataset.cageName === moveCord).classList
+                .remove(`${typeOfMove}Highlight`);
+
         })
     }
 
@@ -105,25 +118,49 @@ class Rook extends Figure {
         this.moves = [];
 
         for (let i = +this.coord[1] - 1; i > 0; i--){
-            if(state[`${this.coord[0]}${i}`]) break
-            this.moves.push(`${this.coord[0]}${i}`);
+            const nextMove = this.coord[0] + i
+            if(state[nextMove] && state[nextMove].split(' ')[0] === this.color) break
+            else if (state[nextMove] && state[nextMove].split(' ')[0] !== this.color){
+                this.moves.push(nextMove + ' take');
+                break
+            } else if (!state[nextMove]){
+                this.moves.push(nextMove + ' move');
+            }
         }
 
         for (let i = +this.coord[1] + 1; i <= 8; i++){
-            if(state[`${this.coord[0]}${i}`]) break
-            this.moves.push(`${this.coord[0]}${i}`);
+            const nextMove = this.coord[0] + i
+            if(state[nextMove] && state[nextMove].split(' ')[0] === this.color) break
+            else if (state[nextMove] && state[nextMove].split(' ')[0] !== this.color){
+                this.moves.push(nextMove + ' take');
+                break
+            } else if (!state[nextMove]){
+                this.moves.push(nextMove + ' move');
+            }
         }
 
         const startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
 
         for (let i =  startLetter - 1; i >= 0; i--){
-            if(state[`${LETTERS[i]}${this.coord[1]}`]) break
-            this.moves.push(`${LETTERS[i]}${this.coord[1]}`);
+            const nextMove = LETTERS[i] + this.coord[1]
+            if(state[nextMove] && state[nextMove].split(' ')[0] === this.color) break
+            else if (state[nextMove] && state[nextMove].split(' ')[0] !== this.color){
+                this.moves.push(nextMove + ' take');
+                break
+            } else if (!state[nextMove]){
+                this.moves.push(nextMove + ' move');
+            }
         }
 
         for (let i = startLetter + 1; i < 8; i++){
-            if(state[`${LETTERS[i]}${this.coord[1]}`]) break
-            this.moves.push(`${LETTERS[i]}${this.coord[1]}`);
+            const nextMove = LETTERS[i] + this.coord[1]
+            if(state[nextMove] && state[nextMove].split(' ')[0] === this.color) break
+            else if (state[nextMove] && state[nextMove].split(' ')[0] !== this.color){
+                this.moves.push(nextMove + ' take');
+                break
+            } else if (!state[nextMove]){
+                this.moves.push(nextMove + ' move');
+            }
         }
     }
 }
@@ -138,23 +175,43 @@ class Bishop extends Figure {
         const startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
         for (let i = +this.coord[1] + 1; i <= 8; i++){
             const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
-            if (state[nextCoord]) break
-            if (nextCoord) this.moves.push(nextCoord)
+
+            if (state[nextCoord] && state[nextCoord].split(' ')[0] !== this.color) {
+                this.moves.push(nextCoord + ' take')
+                break
+            } else if(state[nextCoord] && state[nextCoord].split(' ')[0] === this.color){
+                break
+            } else if (!state[nextCoord] && nextCoord) this.moves.push(nextCoord + ' move')
         }
         for (let i = +this.coord[1] - 1; i > 0; i--){
             const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
-            if (state[nextCoord]) break
-            if (nextCoord) this.moves.push(nextCoord)
+
+            if (state[nextCoord] && state[nextCoord].split(' ')[0] !== this.color) {
+                this.moves.push(nextCoord + ' take')
+                break
+            } else if(state[nextCoord] && state[nextCoord].split(' ')[0] === this.color){
+                break
+            } else if (!state[nextCoord] && nextCoord) this.moves.push(nextCoord + ' move')
         }
         for(let i = +this.coord[1] + 1; i <= 8; i++){
             const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
-            if (state[nextCoord]) break
-            if (nextCoord) this.moves.push(nextCoord)
+
+            if (state[nextCoord] && state[nextCoord].split(' ')[0] !== this.color) {
+                this.moves.push(nextCoord + ' take')
+                break
+            } else if(state[nextCoord] && state[nextCoord].split(' ')[0] === this.color){
+                break
+            } else if (!state[nextCoord] && nextCoord) this.moves.push(nextCoord + ' move')
         }
         for(let i = +this.coord[1] - 1; i > 0; i--){
             const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
-            if (state[nextCoord]) break
-            if (nextCoord) this.moves.push(nextCoord)
+
+            if (state[nextCoord] && state[nextCoord].split(' ')[0] !== this.color) {
+                this.moves.push(nextCoord + ' take')
+                break
+            } else if(state[nextCoord] && state[nextCoord].split(' ')[0] === this.color){
+                break
+            } else if (!state[nextCoord] && nextCoord) this.moves.push(nextCoord + ' move')
         }
     }
 }
