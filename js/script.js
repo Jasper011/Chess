@@ -84,6 +84,17 @@ class Figure {
         }
     }
 
+    _checkMove(cord){
+        if(state[cord] && state[cord].split(' ')[0] === this.color) return true
+        else if (state[cord] && state[cord].split(' ')[0] !== this.color){
+            this.moves.push(cord + ' take');
+            return true
+        } else if (!state[cord]){
+            this.moves.push(cord + ' move');
+            return false
+        }
+    }
+
     _showMoves(){
         this.moves.forEach(move => {
             const moveCord = move.split(' ')[0]
@@ -116,51 +127,22 @@ class Rook extends Figure {
 
     calcMoves() {
         this.moves = [];
-
         for (let i = +this.coord[1] - 1; i > 0; i--){
-            const nextMove = this.coord[0] + i
-            if(state[nextMove] && state[nextMove].split(' ')[0] === this.color) break
-            else if (state[nextMove] && state[nextMove].split(' ')[0] !== this.color){
-                this.moves.push(nextMove + ' take');
-                break
-            } else if (!state[nextMove]){
-                this.moves.push(nextMove + ' move');
-            }
+            const nextCoord = this.coord[0] + i
+            if (this._checkMove(nextCoord)) break
         }
-
         for (let i = +this.coord[1] + 1; i <= 8; i++){
-            const nextMove = this.coord[0] + i
-            if(state[nextMove] && state[nextMove].split(' ')[0] === this.color) break
-            else if (state[nextMove] && state[nextMove].split(' ')[0] !== this.color){
-                this.moves.push(nextMove + ' take');
-                break
-            } else if (!state[nextMove]){
-                this.moves.push(nextMove + ' move');
-            }
+            const nextCoord = this.coord[0] + i
+            if (this._checkMove(nextCoord)) break
         }
-
         const startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
-
         for (let i =  startLetter - 1; i >= 0; i--){
-            const nextMove = LETTERS[i] + this.coord[1]
-            if(state[nextMove] && state[nextMove].split(' ')[0] === this.color) break
-            else if (state[nextMove] && state[nextMove].split(' ')[0] !== this.color){
-                this.moves.push(nextMove + ' take');
-                break
-            } else if (!state[nextMove]){
-                this.moves.push(nextMove + ' move');
-            }
+            const nextCoord = LETTERS[i] + this.coord[1]
+            if (this._checkMove(nextCoord)) break
         }
-
         for (let i = startLetter + 1; i < 8; i++){
-            const nextMove = LETTERS[i] + this.coord[1]
-            if(state[nextMove] && state[nextMove].split(' ')[0] === this.color) break
-            else if (state[nextMove] && state[nextMove].split(' ')[0] !== this.color){
-                this.moves.push(nextMove + ' take');
-                break
-            } else if (!state[nextMove]){
-                this.moves.push(nextMove + ' move');
-            }
+            const nextCoord = LETTERS[i] + this.coord[1]
+            if (this._checkMove(nextCoord)) break
         }
     }
 }
@@ -175,43 +157,19 @@ class Bishop extends Figure {
         const startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
         for (let i = +this.coord[1] + 1; i <= 8; i++){
             const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
-
-            if (state[nextCoord] && state[nextCoord].split(' ')[0] !== this.color) {
-                this.moves.push(nextCoord + ' take')
-                break
-            } else if(state[nextCoord] && state[nextCoord].split(' ')[0] === this.color){
-                break
-            } else if (!state[nextCoord] && nextCoord) this.moves.push(nextCoord + ' move')
+            if (this._checkMove(nextCoord)) break
         }
         for (let i = +this.coord[1] - 1; i > 0; i--){
             const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
-
-            if (state[nextCoord] && state[nextCoord].split(' ')[0] !== this.color) {
-                this.moves.push(nextCoord + ' take')
-                break
-            } else if(state[nextCoord] && state[nextCoord].split(' ')[0] === this.color){
-                break
-            } else if (!state[nextCoord] && nextCoord) this.moves.push(nextCoord + ' move')
+            if (this._checkMove(nextCoord)) break
         }
         for(let i = +this.coord[1] + 1; i <= 8; i++){
             const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
-
-            if (state[nextCoord] && state[nextCoord].split(' ')[0] !== this.color) {
-                this.moves.push(nextCoord + ' take')
-                break
-            } else if(state[nextCoord] && state[nextCoord].split(' ')[0] === this.color){
-                break
-            } else if (!state[nextCoord] && nextCoord) this.moves.push(nextCoord + ' move')
+            if (this._checkMove(nextCoord)) break
         }
         for(let i = +this.coord[1] - 1; i > 0; i--){
             const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
-
-            if (state[nextCoord] && state[nextCoord].split(' ')[0] !== this.color) {
-                this.moves.push(nextCoord + ' take')
-                break
-            } else if(state[nextCoord] && state[nextCoord].split(' ')[0] === this.color){
-                break
-            } else if (!state[nextCoord] && nextCoord) this.moves.push(nextCoord + ' move')
+            if (this._checkMove(nextCoord)) break
         }
     }
 }
