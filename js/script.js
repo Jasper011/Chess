@@ -1,83 +1,170 @@
+"use strict";
+
 const chessDesk = document.querySelector('#chessDesk');
 const cages = Array.from(chessDesk.querySelectorAll('.chessDeskCage'));
 
+const turnSpan = document.querySelector('.turnSpan');
 
-let state = {
-    figures: []
+const colorTextRussian = {
+    white: 'Белые',
+    black:  'Чёрные'
 }
 
+class Board {
+    constructor() {
+        this.figures = [];
+        this.turn = 'black';
+    }
+
+    changeTurn() {
+        turnSpan.classList.remove(this.turn);
+        const color = (this.turn === 'white') ? 'black' : 'white'
+        turnSpan.classList.add(color);
+        turnSpan.textContent = colorTextRussian[color];
+        this.turn = color;
+    }
+}
+
+// TODO: не нужно
+let state = {
+    figures: [],
+    turn: 'black',
+    changeTurn() {
+        turnSpan.classList.remove(state.turn);
+        const color = (state.turn === 'white') ? 'black' : 'white'
+        turnSpan.classList.add(color);
+        turnSpan.textContent = colorTextRussian[color];
+        state.turn = color;
+    }
+}
+
+// const state = new Board();
+
+state.changeTurn()
+
+// init board
 const LETTERS = Array.from('abcdefgh')
-count = 0
+let count = 0
 
 for (let i = 8; i > 0; i--) {
-    for(let j = 0; j < 8; j++){
-        state[LETTERS[j]+i] = undefined;
+    for (let j = 0; j < 8; j++) {
         cages[count].dataset.cageName = LETTERS[j] + i;
         count++;
     }
 }
 
 
+function initBoard(){
+    for (let figure of state.figures){
+        figure.deleteFigure('end game')
+    }
+}
+
 class Figure {
     constructor(type, color) {
-        state.figures.push(this)
+        state.figures.push(this);
         this.coord = undefined;
         this.type = type;
         this.color = color;
         this.moves = [];
         this.isActive = false;
-        this.figure = this._create()
-        this.figure.classList.add('figure')
-        this.figure.classList.add(this.type)
+        this._create()
     }
 
     _create(){
-        let figure = document.createElement('div');
-        figure.classList.add(this.type);
-        figure.innerHTML = `<img src="img/${this.color}/${this.type.toLowerCase()}.png" alt="img/${this.type.toLowerCase()}.png">`;
-        return figure
+        this.figure = document.createElement('div');
+        this.figure.classList.add('figure')
+        this.figure.classList.add(this.type);
+        this.figure.classList.add(this.color);
+        this.figure.innerHTML = `<img src="img/${this.type.toLowerCase()}.png" alt="img/${this.type.toLowerCase()}.png">`;
     }
 
     place(coord) {
-        if (state[coord] === undefined) {
-            state[this.coord] = undefined
+        console.log(coord);
+        if (!state[coord]) {
+            const oldCoord = this.coord;
+            delete state[oldCoord]
             this.coord = coord
-            cages
-                .find(el=> el.dataset.cageName === coord)
-                .append(this.figure);
-            state[coord] = this.color + ' ' + this.type
+            this.#moveFigure(coord)
+            // console.log(this);
+            // console.log(state);
+            state[coord] = {
+                'color':this.color,
+                'type':this.type
+            }
             for (let figure of state.figures) {
                 figure.calcMoves()
             }
-            this.calcMoves()
-            this.addEventListeners()
+            this.addHandlers()
 
+        } else {
+            console.error("Стейт уже занят")
         }
 
     }
 
-    addEventListeners(){
+    #moveFigure(coord) {
+        cages
+            .find(el=> el.dataset.cageName === coord)
+            .append(this.figure);
+    }
+
+    deleteFigure(mode="take"){
+        this.figure.remove()
+        state.figures.splice(state.figures.indexOf(this), 1);
+        state[this.coord] = undefined;
+        this._toggleMovesHighlight('remove')
+        // if (mode !== "end game" && this.type === "King"){
+        //     initBoard()
+        // }
+    }
+
+    addHandlers(){
         if (this.figure){
             this.figure.addEventListener('mouseover', e => {
-                this._showMoves()
+                this._toggleMovesHighlight('add')
                 this.figure.addEventListener('mouseout', e => {
-                    this._hideMoves()
+                    this._toggleMovesHighlight('remove')
                 })
             })
             this.figure.addEventListener('click', e => {
-                this.figure.classList.add('active')
+                if (this.color === state.turn){
+                    for (let figure of state.figures) {
+                        figure.isActive = false
+                        figure.figure.classList.remove('active')
+                    }
+                    this.figure.classList.add('active')
+                    this.isActive = true;
+                } else if (this.color !== state.turn){
+                    const attackingFigure = state.figures.find(figure=>figure.isActive)
+                    if (!attackingFigure) {return}
+                    const attackMoves = attackingFigure.moves
+                    const move = attackMoves.find(move=>move.coord === this.coord && move.type === 'take')
+                    if (move) {
+                        this.deleteFigure()
+                        attackingFigure.place(move.coord)
+                        attackingFigure.figure.classList.remove('active')
+                        attackingFigure.isActive = false;
+                        attackingFigure.figure.classList.remove('active')
+                        state.changeTurn()
+                    }
+                }
 
             })
-            this.figure.addEventListener('click', e => {
-                this.isActive = true;
-            })
             chessDesk.addEventListener('click', function move(e){
-                const cageName = e.target.dataset.cageName;
-                if (this.moves.map(move=>move.split(' ')[0]).includes(cageName) && this.isActive){
-                    this.place(cageName)
-                    this.figure.classList.remove('active')
-                    this.isActive = false;
-                    chessDesk.removeEventListener('click', move);
+                const coord = e.target.dataset.cageName;
+                const move = this.moves.find(move=>move['coord'] === coord);
+                if (move && this.isActive){
+                    if (move.type === 'move'){
+                        this.place(coord)
+                        this.figure.classList.remove('active')
+                        this.isActive = false;
+                        this.figure.classList.remove('active')
+                        state.changeTurn()
+                        chessDesk.removeEventListener('click', move);
+                    } else if (move.type === 'take'){
+                        console.log('take')
+                    }
                 }
             }.bind(this))
 
@@ -85,39 +172,38 @@ class Figure {
     }
 
     _checkMove(cord){
-        if(state[cord] && state[cord].split(' ')[0] === this.color) return true
-        else if (state[cord] && state[cord].split(' ')[0] !== this.color){
-            this.moves.push(cord + ' take');
-            return true
-        } else if (!state[cord]){
-            this.moves.push(cord + ' move');
-            return false
+        if (cord){
+            let isStop;
+            let move = {
+                'coord': cord,
+            }
+            if (!state[cord]) {
+                isStop = false;
+                move['type'] = 'move'
+                this.moves.push(move);
+            } else if (state[cord]){
+                isStop = true;
+                if (state[cord].color !== this.color){
+                    move['type'] = 'take'
+                    this.moves.push(move);
+                }
+            }
+            return isStop;
         }
     }
 
-    _showMoves(){
+    _toggleMovesHighlight(action){
         this.moves.forEach(move => {
-            const moveCord = move.split(' ')[0]
-            const typeOfMove = move.split(' ')[1]
+            const [moveCord, typeOfMove] = [move['coord'], move['type']];
             cages
                 .find(cage=> cage.dataset.cageName === moveCord).classList
-                .add(`${typeOfMove}Highlight`);
-
+                [action](`${typeOfMove}Highlight`);
         })
     }
 
-    _hideMoves(){
-        this.moves.forEach(move => {
-            const moveCord = move.split(' ')[0]
-            const typeOfMove = move.split(' ')[1]
-            cages
-                .find(cage=> cage.dataset.cageName === moveCord).classList
-                .remove(`${typeOfMove}Highlight`);
-
-        })
+    calcMoves(){
+        throw new Error('You have to implement the method calcMoves!');
     }
-
-    calcMoves(){}
 }
 
 class Rook extends Figure {
@@ -145,6 +231,7 @@ class Rook extends Figure {
             if (this._checkMove(nextCoord)) break
         }
     }
+
 }
 
 class Bishop extends Figure {
@@ -174,8 +261,93 @@ class Bishop extends Figure {
     }
 }
 
-const a = new Rook('black')
-a.place('e2')
+class King extends Figure{
+    constructor(color){
+        super("King", color)
+    }
 
-const b = new Bishop('black')
-b.place('e5')
+    calcMoves() {
+        this.moves = []
+        const startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
+        const startNum = +this.coord[1]
+
+        const endNum = startNum === 8 ? startNum : startNum + 1;
+        const endLet = startLetter === 7 ? startLetter : startLetter + 1;
+        for (let i = (startNum === 1) ? startNum : (startNum - 1); i <= endNum; i++) {
+            for (let j = startLetter === 0 ? startLetter : startLetter - 1; j <= endLet; j++) {
+                this._checkMove(LETTERS[j] + i)
+            }
+        }
+        
+    }
+
+    deleteFigure(){
+        alert('Game end!')
+    }
+
+}
+
+
+class Queen extends Figure {
+    constructor(color) {
+        super('Rook', color);
+    }
+
+    calcMoves() {
+        Rook().calcMoves();
+        // rookMoves.calcMoves();
+        Bishop().calcMoves();
+        // bishopMoves.calcMoves();
+    }
+}
+
+const dynamicTypes = {
+    Rook,
+    Bishop,
+    King,
+}
+
+
+
+function placeNewFigure(type, color, coord){
+    let figure;
+    if (type==='rook') figure = new Rook(color);
+    else if (type==='bishop') figure = new Bishop(color);
+    else if (type==='King') figure = new King(color);
+    else return
+    figure.place(coord);
+    return figure;
+}
+
+function placeNewFigureFactory(color){
+    return function (type, coord) {
+        if (!Object.keys(dynamicTypes).includes(type)) return
+        const figure = new dynamicTypes[type](color);
+        figure.place(coord);
+        return figure;
+    }
+
+}
+
+const placeNewWhiteFigure = placeNewFigureFactory("white");
+const placeNewBlackFigure = placeNewFigureFactory("black");
+
+
+const whiteFigures = [ 
+    ['Rook', 'f3'], 
+    ['Rook', 'f2'],
+    ['King', 'a2']
+];
+
+const blackFigures = [ 
+    ['Rook', 'a4'], 
+    ['Rook', 'a6']
+];
+
+
+whiteFigures.forEach(([type, place])=>{
+    placeNewWhiteFigure(type, place)
+})
+blackFigures.forEach(([type, place])=>{
+    placeNewBlackFigure(type, place)
+})

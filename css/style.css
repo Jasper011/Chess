@@ -1,7 +1,32 @@
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: url(../img/desk.jpg);
+  z-index: -1; }
+
+.turn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 15px 10px;
+  border-radius: 5px;
+  background-color: #b7b7b7; }
+  .turnSpan {
+    font-weight: bold; }
+  .turnSpan.white {
+    color: white; }
+  .turnSpan.black {
+    color: black; }
+
 .content {
   width: 676px;
   margin: 0 auto;
-  display: flex; }
+  display: flex;
+  position: relative;
+  color: white; }
 
 .boardWrapper {
   width: 640px; }
@@ -20,7 +45,8 @@
   #chessDesk .chessDeskCage {
     width: 80px;
     height: 80px;
-    box-sizing: border-box; }
+    box-sizing: border-box;
+    background-color: #b7b7b7; }
     #chessDesk .chessDeskCage.moveHighlight {
       box-shadow: 0 0 101px 100px rgba(0, 255, 19, 0.28) inset; }
     #chessDesk .chessDeskCage.takeHighlight {
@@ -99,6 +125,8 @@
     #chessDesk .chessDeskCage .figure.active {
       position: relative;
       bottom: 5px; }
+    #chessDesk .chessDeskCage .figure.white {
+      filter: invert(1); }
 
 .topIndex {
   width: 100%;
