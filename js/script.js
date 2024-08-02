@@ -14,6 +14,7 @@ class Board {
     constructor() {
         this.figures = [];
         this.turn = 'black';
+        this.cages = {}
     }
 
     changeTurn() {
@@ -23,10 +24,15 @@ class Board {
         turnSpan.textContent = colorTextRussian[color];
         this.turn = color;
     }
+
+    removeFigure(figure) {
+        this.figures.splice(this.figures.findIndex(el=>el==figure), 1)
+    }
 }
 
 // TODO: не нужно
 let state = {
+    cages: {},
     figures: [],
     turn: 'black',
     changeTurn() {
@@ -38,7 +44,7 @@ let state = {
     }
 }
 
-// const state = new Board();
+state = new Board();
 
 state.changeTurn()
 
@@ -81,14 +87,14 @@ class Figure {
 
     place(coord) {
         console.log(coord);
-        if (!state[coord]) {
+        if (!state.cages[coord]) {
             const oldCoord = this.coord;
-            delete state[oldCoord]
+            delete state.cages[oldCoord]
             this.coord = coord
             this.#moveFigure(coord)
             // console.log(this);
             // console.log(state);
-            state[coord] = {
+            state.cages[coord] = {
                 'color':this.color,
                 'type':this.type
             }
@@ -109,14 +115,11 @@ class Figure {
             .append(this.figure);
     }
 
-    deleteFigure(mode="take"){
-        this.figure.remove()
-        state.figures.splice(state.figures.indexOf(this), 1);
-        state[this.coord] = undefined;
+    deleteFigure(){
+        state.removeFigure(this)
+        state.cages[this.coord] = undefined;
         this._toggleMovesHighlight('remove')
-        // if (mode !== "end game" && this.type === "King"){
-        //     initBoard()
-        // }
+        this.figure.remove()
     }
 
     addHandlers(){
@@ -141,6 +144,7 @@ class Figure {
                     const attackMoves = attackingFigure.moves
                     const move = attackMoves.find(move=>move.coord === this.coord && move.type === 'take')
                     if (move) {
+                        chessDesk.removeEventListener('click', move);
                         this.deleteFigure()
                         attackingFigure.place(move.coord)
                         attackingFigure.figure.classList.remove('active')
@@ -154,7 +158,7 @@ class Figure {
             chessDesk.addEventListener('click', function move(e){
                 const coord = e.target.dataset.cageName;
                 const move = this.moves.find(move=>move['coord'] === coord);
-                if (move && this.isActive){
+                if (move && this.isActive && state.figures.includes(this)){
                     if (move.type === 'move'){
                         this.place(coord)
                         this.figure.classList.remove('active')
@@ -162,8 +166,6 @@ class Figure {
                         this.figure.classList.remove('active')
                         state.changeTurn()
                         chessDesk.removeEventListener('click', move);
-                    } else if (move.type === 'take'){
-                        console.log('take')
                     }
                 }
             }.bind(this))
@@ -177,13 +179,13 @@ class Figure {
             let move = {
                 'coord': cord,
             }
-            if (!state[cord]) {
+            if (!state.cages[cord]) {
                 isStop = false;
                 move['type'] = 'move'
                 this.moves.push(move);
-            } else if (state[cord]){
+            } else if (state.cages[cord]){
                 isStop = true;
-                if (state[cord].color !== this.color){
+                if (state.cages[cord].color !== this.color){
                     move['type'] = 'take'
                     this.moves.push(move);
                 }
@@ -221,7 +223,7 @@ class Rook extends Figure {
             const nextCoord = this.coord[0] + i
             if (this._checkMove(nextCoord)) break
         }
-        const startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
+        const startLetter = LETTERS.findIndex((el) => el === this.coord[0])
         for (let i =  startLetter - 1; i >= 0; i--){
             const nextCoord = LETTERS[i] + this.coord[1]
             if (this._checkMove(nextCoord)) break
@@ -290,39 +292,59 @@ class King extends Figure{
 
 class Queen extends Figure {
     constructor(color) {
-        super('Rook', color);
+        super('Queen', color);
     }
 
     calcMoves() {
-        Rook().calcMoves();
-        // rookMoves.calcMoves();
-        Bishop().calcMoves();
-        // bishopMoves.calcMoves();
+        this.moves = [];
+
+        let startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
+        for (let i = +this.coord[1] + 1; i <= 8; i++){
+            const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
+            if (this._checkMove(nextCoord)) break
+        }
+        for (let i = +this.coord[1] - 1; i > 0; i--){
+            const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
+            if (this._checkMove(nextCoord)) break
+        }
+        for(let i = +this.coord[1] + 1; i <= 8; i++){
+            const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
+            if (this._checkMove(nextCoord)) break
+        }
+        for(let i = +this.coord[1] - 1; i > 0; i--){
+            const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
+            if (this._checkMove(nextCoord)) break
+        }
+        for (let i = +this.coord[1] - 1; i > 0; i--){
+            const nextCoord = this.coord[0] + i
+            if (this._checkMove(nextCoord)) break
+        }
+        for (let i = +this.coord[1] + 1; i <= 8; i++){
+            const nextCoord = this.coord[0] + i
+            if (this._checkMove(nextCoord)) break
+        }
+        for (let i =  startLetter - 1; i >= 0; i--){
+            const nextCoord = LETTERS[i] + this.coord[1]
+            if (this._checkMove(nextCoord)) break
+        }
+        for (let i = startLetter + 1; i < 8; i++){
+            const nextCoord = LETTERS[i] + this.coord[1]
+            if (this._checkMove(nextCoord)) break
+        }
     }
 }
 
-const dynamicTypes = {
+const figureTypes = {
     Rook,
     Bishop,
     King,
-}
-
-
-
-function placeNewFigure(type, color, coord){
-    let figure;
-    if (type==='rook') figure = new Rook(color);
-    else if (type==='bishop') figure = new Bishop(color);
-    else if (type==='King') figure = new King(color);
-    else return
-    figure.place(coord);
-    return figure;
+    Queen,
 }
 
 function placeNewFigureFactory(color){
     return function (type, coord) {
-        if (!Object.keys(dynamicTypes).includes(type)) return
-        const figure = new dynamicTypes[type](color);
+        if (!Object.keys(figureTypes).includes(type)) return
+        const figure = new figureTypes[type](color);
         figure.place(coord);
         return figure;
     }
@@ -341,7 +363,8 @@ const whiteFigures = [
 
 const blackFigures = [ 
     ['Rook', 'a4'], 
-    ['Rook', 'a6']
+    ['Rook', 'a6'],
+    ['Queen', 'b2']
 ];
 
 
