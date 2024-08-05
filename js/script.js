@@ -163,19 +163,19 @@ class Figure {
         }
     }
 
-    _checkMove(cord){
-        if (cord){
+    _checkMove(coord){
+        if (coord){
             let isStop;
             let move = {
-                'coord': cord,
+                'coord': coord,
             }
-            if (!state.cages[cord]) {
+            if (!state.cages[coord]) {
                 isStop = false;
                 move['type'] = 'move'
                 this.moves.push(move);
-            } else if (state.cages[cord]){
+            } else if (state.cages[coord]){
                 isStop = true;
-                if (state.cages[cord].color !== this.color){
+                if (state.cages[coord].color !== this.color){
                     move['type'] = 'take'
                     this.moves.push(move);
                 }
@@ -274,12 +274,11 @@ class King extends Figure{
     }
 
     // deleteFigure(mode="take"){
-    //     console.log(this.type);
     //     this._toggleMovesHighlight('remove')
     //     this.figure.remove()
     //     delete state.cages[this.coord];
-    //     state.figures.splice(state.figures.findIndex(el=>el===this), 1)
-    //     if (mode !== 'init'){
+    //     state.figures.splice(state.figures.findIndex(el=>(el===this)), 1)
+    //     if (mode === 'take'){
     //         initBoard()
     //     }
     // }
@@ -379,12 +378,43 @@ class Pawn extends Figure{
     }
 }
 
+class Horse extends Figure{
+    constructor(color){
+        super("Horse", color)
+    }
+
+    calcMoves(){
+        this.moves = []
+
+        const startLetter = LETTERS.findIndex((el) => el === this.coord[0])
+        const startNum = +this.coord[1]
+
+        const validMoves = [
+            LETTERS[startLetter + 1] + (startNum + 2),
+            LETTERS[startLetter + 1] + (startNum - 2),
+            LETTERS[startLetter - 1] + (startNum + 2),
+            LETTERS[startLetter - 1] + (startNum - 2),
+            LETTERS[startLetter + 2] + (startNum - 1),
+            LETTERS[startLetter + 2] + (startNum + 1),
+            LETTERS[startLetter - 2] + (startNum - 1),
+            LETTERS[startLetter - 2] + (startNum + 1),
+        ]
+
+        for (let move of validMoves){
+            if (cages.find(cage=>cage.dataset.cageName===move)){
+                this._checkMove(move)
+            }
+        }
+    }
+}
+
 const figureTypes = {
     Rook,
     Bishop,
     King,
     Queen,
-    Pawn
+    Pawn,
+    Horse
 }
 
 function placeNewFigureFactory(color){
@@ -408,6 +438,8 @@ const whiteFigures = [
     ['King', 'e1'],
     ['Bishop', 'c1'],
     ['Bishop', 'f1'],
+    ['Horse', 'b1'],
+    ['Horse', 'g1'],
 ];
 
 for (let i = 0; i <= 7; i++){
@@ -421,6 +453,8 @@ const blackFigures = [
     ['King', 'e8'],
     ['Bishop', 'c8'],
     ['Bishop', 'f8'],
+    ['Horse', 'b8'],
+    ['Horse', 'g8'],
 ];
 
 for (let i = 0; i <= 7; i++){
