@@ -21,15 +21,18 @@
   .turnSpan.black {
     color: black; }
 
-.content {
-  width: 676px;
-  margin: 0 auto;
-  display: flex;
-  position: relative;
-  color: white; }
-
-.boardWrapper {
+#boardWrapper {
   width: 640px; }
+
+.wrapper {
+  display: flex;
+  width: 100%; }
+
+#content {
+  width: 676px;
+  transition: 0.3s all ease;
+  margin: 0 auto;
+  color: white; }
 
 #chessDesk {
   border: 1px solid black;
