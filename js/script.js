@@ -1,4 +1,6 @@
 "use strict";
+import { whiteFigures, blackFigures } from './games/classic.js'
+import { whiteFigures as whiteFiguresDemo, blackFigures as blackFiguresDemo } from './games/testEndGame.js';
 
 const chessDesk = document.querySelector('#chessDesk');
 const cages = Array.from(chessDesk.querySelectorAll('.chessDeskCage'));
@@ -23,17 +25,18 @@ class Board {
         turnSpan.classList.add(color);
         turnSpan.textContent = colorTextRussian[color];
         this.turn = color;
+        // content.classList.toggle('flip')
     }
 
-    // removeAllFigures(){
-    //     for (let figure of this.figures){
-    //         if (figure.type=='King'){
-    //             figure.deleteFigure('init')
-    //             continue
-    //         }
-    //         figure.deleteFigure()
-    //     }
-    // }
+    removeAllFigures(){
+        for (let figure of this.figures){
+            if (figure.type=='King'){
+                figure.deleteFigure('init')
+                continue
+            }
+            figure.deleteFigure()
+        }
+    }
 }
 
 const state = new Board();
@@ -51,9 +54,9 @@ for (let i = 8; i > 0; i--) {
 }
 
 
-// function initBoard() {
-//     state.removeAllFigures()
-// }
+function initBoard() {
+    state.removeAllFigures()
+}
 
 class Figure {
     constructor(type, color) {
@@ -273,15 +276,15 @@ class King extends Figure{
         
     }
 
-    // deleteFigure(mode="take"){
-    //     this._toggleMovesHighlight('remove')
-    //     this.figure.remove()
-    //     delete state.cages[this.coord];
-    //     state.figures.splice(state.figures.findIndex(el=>(el===this)), 1)
-    //     if (mode === 'take'){
-    //         initBoard()
-    //     }
-    // }
+    deleteFigure(mode="take"){
+        this._toggleMovesHighlight('remove')
+        this.figure.remove()
+        delete state.cages[this.coord];
+        state.figures.splice(state.figures.findIndex(el=>(el===this)), 1)
+        if (mode === 'take'){
+            initBoard()
+        }
+    }
 
 }
 
@@ -394,10 +397,10 @@ class Horse extends Figure{
             LETTERS[startLetter + 1] + (startNum - 2),
             LETTERS[startLetter - 1] + (startNum + 2),
             LETTERS[startLetter - 1] + (startNum - 2),
-            LETTERS[startLetter + 2] + (startNum - 1),
             LETTERS[startLetter + 2] + (startNum + 1),
-            LETTERS[startLetter - 2] + (startNum - 1),
+            LETTERS[startLetter + 2] + (startNum - 1),
             LETTERS[startLetter - 2] + (startNum + 1),
+            LETTERS[startLetter - 2] + (startNum - 1),
         ]
 
         for (let move of validMoves){
@@ -431,40 +434,15 @@ const placeNewWhiteFigure = placeNewFigureFactory("white");
 const placeNewBlackFigure = placeNewFigureFactory("black");
 
 
-const whiteFigures = [ 
-    ['Rook', 'a1'], 
-    ['Rook', 'h1'],
-    ['Queen', 'd1'],
-    ['King', 'e1'],
-    ['Bishop', 'c1'],
-    ['Bishop', 'f1'],
-    ['Horse', 'b1'],
-    ['Horse', 'g1'],
-];
 
-for (let i = 0; i <= 7; i++){
-    whiteFigures.push(["Pawn", `${LETTERS[i]}2`])
+
+function startGame(whiteFigures, blackFigures) {
+    whiteFigures.forEach(([type, place])=>{
+        placeNewWhiteFigure(type, place)
+    })
+    blackFigures.forEach(([type, place])=>{
+        placeNewBlackFigure(type, place)
+    })
 }
-
-const blackFigures = [ 
-    ['Rook', 'a8'], 
-    ['Rook', 'h8'],
-    ['Queen', 'd8'],
-    ['King', 'e8'],
-    ['Bishop', 'c8'],
-    ['Bishop', 'f8'],
-    ['Horse', 'b8'],
-    ['Horse', 'g8'],
-];
-
-for (let i = 0; i <= 7; i++){
-    blackFigures.push(["Pawn", `${LETTERS[i]}7`])
-}
-
-
-whiteFigures.forEach(([type, place])=>{
-    placeNewWhiteFigure(type, place)
-})
-blackFigures.forEach(([type, place])=>{
-    placeNewBlackFigure(type, place)
-})
+// startGame(whiteFigures, blackFigures);
+startGame(whiteFiguresDemo, blackFiguresDemo);
