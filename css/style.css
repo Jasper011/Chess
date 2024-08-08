@@ -7,19 +7,40 @@
   background: url(../img/desk.jpg);
   z-index: -1; }
 
-.turn {
+#absoluteWrapper {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  padding: 15px 10px;
-  border-radius: 5px;
-  background-color: #b7b7b7; }
-  .turnSpan {
-    font-weight: bold; }
-  .turnSpan.white {
-    color: white; }
-  .turnSpan.black {
-    color: black; }
+  top: 10px;
+  left: 15px;
+  width: 200px; }
+  #absoluteWrapper .turn {
+    text-align: center;
+    position: relative;
+    width: 100%;
+    padding: 15px 10px;
+    border-radius: 5px;
+    background-color: #b7b7b7;
+    margin-bottom: 10px; }
+    #absoluteWrapper .turnSpan {
+      font-weight: bold; }
+    #absoluteWrapper .turnSpan.white {
+      color: white; }
+    #absoluteWrapper .turnSpan.black {
+      color: black; }
+  #absoluteWrapper #history {
+    width: 100%;
+    padding: 15px 10px;
+    border-radius: 5px;
+    background-color: #b7b7b7; }
+  #absoluteWrapper .historyPoint {
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    font-size: 24px; }
+    #absoluteWrapper .historyPoint .figureImg {
+      width: 30px;
+      height: 30px; }
+      #absoluteWrapper .historyPoint .figureImg.white {
+        filter: invert(1); }
 
 #boardWrapper {
   width: 640px; }

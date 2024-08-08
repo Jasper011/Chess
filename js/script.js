@@ -4,19 +4,31 @@ import { whiteFigures as whiteFiguresDemo, blackFigures as blackFiguresDemo } fr
 
 const chessDesk = document.querySelector('#chessDesk');
 const cages = Array.from(chessDesk.querySelectorAll('.chessDeskCage'));
-
+const historyHTML = document.querySelector('#history')
 const turnSpan = document.querySelector('.turnSpan');
 
 const colorTextRussian = {
     white: 'Белые',
-    black:  'Чёрные'
+    black: 'Чёрные'
 }
 
 class Board {
     constructor() {
         this.figures = [];
         this.turn = 'black';
-        this.cages = {}
+        this.cages = {};
+        this.prevMoves = []
+    }
+
+    addHistoryPoint(pointData){
+        console.log(pointData);
+        this.prevMoves.push(pointData)
+        const point = document.createElement('div')
+        point.classList.add('historyPoint') 
+        point.innerHTML += `<span class="moveNum">${this.prevMoves.length}.</span>`
+        point.innerHTML += `<img src="img/${pointData.figureType}.png" class="figureImg ${pointData.color}">`
+        point.innerHTML += `<span class="moves">${pointData.prev}-${pointData.current}</span>`
+        historyHTML.append(point)
     }
 
     changeTurn() {
@@ -28,19 +40,29 @@ class Board {
         // content.classList.toggle('flip')
     }
 
-    removeAllFigures(){
-        for (let figure of this.figures){
-            if (figure.type=='King'){
+    removeAllFigures() {
+        // console.trace('Удаляем все фигуры');
+
+        console.log(this.figures);
+        let i = this.figures.length - 1;
+        // debugger;
+        while (i >= 0) {
+            const figure = this.figures[i];
+            console.log('this.figures.length', this.figures.length);
+            console.log(i--, figure);
+            if (figure.type == 'King') {
                 figure.deleteFigure('init')
                 continue
             }
+
             figure.deleteFigure()
+
         }
     }
 }
 
 const state = new Board();
-
+window.state = state;
 state.changeTurn()
 
 const LETTERS = Array.from('abcdefgh')
@@ -69,7 +91,7 @@ class Figure {
         this._create()
     }
 
-    _create(){
+    _create() {
         this.figure = document.createElement('div');
         this.figure.classList.add('figure')
         this.figure.classList.add(this.type);
@@ -84,14 +106,21 @@ class Figure {
             this.coord = coord
             this.#moveFigure(coord)
             state.cages[coord] = {
-                'color':this.color,
-                'type':this.type
+                'color': this.color,
+                'type': this.type
             }
             for (let figure of state.figures) {
                 figure.calcMoves()
             }
             this.addHandlers()
-
+            if (oldCoord){
+                state.addHistoryPoint({
+                    color:this.color,
+                    prev:oldCoord,
+                    current:this.coord,
+                    figureType:this.type
+                })
+            }
         } else {
             console.error("Стейт уже занят")
         }
@@ -100,19 +129,19 @@ class Figure {
 
     #moveFigure(coord) {
         cages
-            .find(el=> el.dataset.cageName === coord)
+            .find(el => el.dataset.cageName === coord)
             .append(this.figure);
     }
 
-    deleteFigure(){
+    deleteFigure() {
         this.figure.remove()
         this._toggleMovesHighlight('remove')
         delete state.cages[this.coord];
         state.figures.splice(state.figures.indexOf(this), 1)
     }
 
-    addHandlers(){
-        if (this.figure){
+    addHandlers() {
+        if (this.figure) {
             this.figure.addEventListener('mouseover', e => {
                 this._toggleMovesHighlight('add')
                 this.figure.addEventListener('mouseout', e => {
@@ -120,22 +149,23 @@ class Figure {
                 })
             })
             this.figure.addEventListener('click', e => {
-                if (this.color === state.turn){
+                if (this.color === state.turn) {
                     for (let figure of state.figures) {
                         figure.isActive = false
                         figure.figure.classList.remove('active')
                     }
                     this.figure.classList.add('active')
                     this.isActive = true;
-                } else if (this.color !== state.turn){
-                    if (this.type == 'King'){
+                } else if (this.color !== state.turn) {
+                    if (this.type == 'King') {
                         this.deleteFigure()
                         e.preventDefault()
+                        return
                     }
-                    const attackingFigure = state.figures.find(figure=>figure.isActive)
-                    if (!attackingFigure) {return}
+                    const attackingFigure = state.figures.find(figure => figure.isActive)
+                    if (!attackingFigure) { return }
                     const attackMoves = attackingFigure.moves
-                    const move = attackMoves.find(move=>move.coord === this.coord && move.type === 'take')
+                    const move = attackMoves.find(move => move.coord === this.coord && move.type === 'take')
                     if (move) {
                         chessDesk.removeEventListener('click', move);
                         this.deleteFigure()
@@ -148,11 +178,11 @@ class Figure {
                 }
 
             })
-            chessDesk.addEventListener('click', function move(e){
+            chessDesk.addEventListener('click', function move(e) {
                 const coord = e.target.dataset.cageName;
-                const move = this.moves.find(move=>move['coord'] === coord);
-                if (move && this.isActive && state.figures.includes(this)){
-                    if (move.type === 'move'){
+                const move = this.moves.find(move => move['coord'] === coord);
+                if (move && this.isActive && state.figures.includes(this)) {
+                    if (move.type === 'move') {
                         this.place(coord)
                         this.figure.classList.remove('active')
                         this.isActive = false;
@@ -166,8 +196,8 @@ class Figure {
         }
     }
 
-    _checkMove(coord){
-        if (coord){
+    _checkMove(coord) {
+        if (coord) {
             let isStop;
             let move = {
                 'coord': coord,
@@ -176,9 +206,9 @@ class Figure {
                 isStop = false;
                 move['type'] = 'move'
                 this.moves.push(move);
-            } else if (state.cages[coord]){
+            } else if (state.cages[coord]) {
                 isStop = true;
-                if (state.cages[coord].color !== this.color){
+                if (state.cages[coord].color !== this.color) {
                     move['type'] = 'take'
                     this.moves.push(move);
                 }
@@ -187,16 +217,16 @@ class Figure {
         }
     }
 
-    _toggleMovesHighlight(action){
+    _toggleMovesHighlight(action) {
         this.moves.forEach(move => {
             const [moveCord, typeOfMove] = [move['coord'], move['type']];
             cages
-                .find(cage=> cage.dataset.cageName === moveCord).classList
-                [action](`${typeOfMove}Highlight`);
+                .find(cage => cage.dataset.cageName === moveCord).classList
+            [action](`${typeOfMove}Highlight`);
         })
     }
 
-    calcMoves(){
+    calcMoves() {
         throw new Error('You have to implement the method calcMoves!');
     }
 }
@@ -208,20 +238,20 @@ class Rook extends Figure {
 
     calcMoves() {
         this.moves = [];
-        for (let i = +this.coord[1] - 1; i > 0; i--){
+        for (let i = +this.coord[1] - 1; i > 0; i--) {
             const nextCoord = this.coord[0] + i
             if (this._checkMove(nextCoord)) break
         }
-        for (let i = +this.coord[1] + 1; i <= 8; i++){
+        for (let i = +this.coord[1] + 1; i <= 8; i++) {
             const nextCoord = this.coord[0] + i
             if (this._checkMove(nextCoord)) break
         }
         const startLetter = LETTERS.findIndex((el) => el === this.coord[0])
-        for (let i =  startLetter - 1; i >= 0; i--){
+        for (let i = startLetter - 1; i >= 0; i--) {
             const nextCoord = LETTERS[i] + this.coord[1]
             if (this._checkMove(nextCoord)) break
         }
-        for (let i = startLetter + 1; i < 8; i++){
+        for (let i = startLetter + 1; i < 8; i++) {
             const nextCoord = LETTERS[i] + this.coord[1]
             if (this._checkMove(nextCoord)) break
         }
@@ -237,27 +267,27 @@ class Bishop extends Figure {
         this.moves = [];
 
         const startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
-        for (let i = +this.coord[1] + 1; i <= 8; i++){
+        for (let i = +this.coord[1] + 1; i <= 8; i++) {
             const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
             if (this._checkMove(nextCoord)) break
         }
-        for (let i = +this.coord[1] - 1; i > 0; i--){
+        for (let i = +this.coord[1] - 1; i > 0; i--) {
             const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
             if (this._checkMove(nextCoord)) break
         }
-        for(let i = +this.coord[1] + 1; i <= 8; i++){
+        for (let i = +this.coord[1] + 1; i <= 8; i++) {
             const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
             if (this._checkMove(nextCoord)) break
         }
-        for(let i = +this.coord[1] - 1; i > 0; i--){
+        for (let i = +this.coord[1] - 1; i > 0; i--) {
             const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
             if (this._checkMove(nextCoord)) break
         }
     }
 }
 
-class King extends Figure{
-    constructor(color){
+class King extends Figure {
+    constructor(color) {
         super("King", color)
     }
 
@@ -273,15 +303,15 @@ class King extends Figure{
                 this._checkMove(LETTERS[j] + i)
             }
         }
-        
+
     }
 
-    deleteFigure(mode="take"){
+    deleteFigure(mode = "take") {
         this._toggleMovesHighlight('remove')
         this.figure.remove()
         delete state.cages[this.coord];
-        state.figures.splice(state.figures.findIndex(el=>(el===this)), 1)
-        if (mode === 'take'){
+        state.figures.splice(state.figures.findIndex(el => (el === this)), 1)
+        if (mode === 'take') {
             initBoard()
         }
     }
@@ -298,95 +328,95 @@ class Queen extends Figure {
         this.moves = [];
 
         let startLetter = LETTERS.findIndex((el, i) => el === this.coord[0])
-        for (let i = +this.coord[1] + 1; i <= 8; i++){
+        for (let i = +this.coord[1] + 1; i <= 8; i++) {
             const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
             if (this._checkMove(nextCoord)) break
         }
-        for (let i = +this.coord[1] - 1; i > 0; i--){
+        for (let i = +this.coord[1] - 1; i > 0; i--) {
             const nextCoord = LETTERS[startLetter + i - +this.coord[1]] + i
             if (this._checkMove(nextCoord)) break
         }
-        for(let i = +this.coord[1] + 1; i <= 8; i++){
+        for (let i = +this.coord[1] + 1; i <= 8; i++) {
             const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
             if (this._checkMove(nextCoord)) break
         }
-        for(let i = +this.coord[1] - 1; i > 0; i--){
+        for (let i = +this.coord[1] - 1; i > 0; i--) {
             const nextCoord = LETTERS[startLetter - i + +this.coord[1]] + i
             if (this._checkMove(nextCoord)) break
         }
-        for (let i = +this.coord[1] - 1; i > 0; i--){
+        for (let i = +this.coord[1] - 1; i > 0; i--) {
             const nextCoord = this.coord[0] + i
             if (this._checkMove(nextCoord)) break
         }
-        for (let i = +this.coord[1] + 1; i <= 8; i++){
+        for (let i = +this.coord[1] + 1; i <= 8; i++) {
             const nextCoord = this.coord[0] + i
             if (this._checkMove(nextCoord)) break
         }
-        for (let i =  startLetter - 1; i >= 0; i--){
+        for (let i = startLetter - 1; i >= 0; i--) {
             const nextCoord = LETTERS[i] + this.coord[1]
             if (this._checkMove(nextCoord)) break
         }
-        for (let i = startLetter + 1; i < 8; i++){
+        for (let i = startLetter + 1; i < 8; i++) {
             const nextCoord = LETTERS[i] + this.coord[1]
             if (this._checkMove(nextCoord)) break
         }
     }
 }
 
-class Pawn extends Figure{
-    constructor(color){
+class Pawn extends Figure {
+    constructor(color) {
         super("Pawn", color)
     }
 
-    calcMoves(){
+    calcMoves() {
         this.moves = []
         let startLetter = LETTERS.findIndex((el) => el === this.coord[0])
-        if (this.color === 'white'){
-            let nextTakekoords = [LETTERS[startLetter-1]+(+this.coord[1]+1), LETTERS[startLetter+1]+(+this.coord[1]+1)]
-            nextTakekoords.forEach((coord, i)=>{
-                if(coord && state.cages[coord] && state.cages[coord].color !== this.color){
-                    this.moves.push( {coord: coord, type:'take'})
+        if (this.color === 'white') {
+            let nextTakekoords = [LETTERS[startLetter - 1] + (+this.coord[1] + 1), LETTERS[startLetter + 1] + (+this.coord[1] + 1)]
+            nextTakekoords.forEach((coord, i) => {
+                if (coord && state.cages[coord] && state.cages[coord].color !== this.color) {
+                    this.moves.push({ coord: coord, type: 'take' })
                 }
             })
-            let nextCoord = LETTERS[startLetter] + (+this.coord[1]+1)
-            if (!state.cages[nextCoord]){
-                this.moves.push( {coord: nextCoord, type:'move'})
+            let nextCoord = LETTERS[startLetter] + (+this.coord[1] + 1)
+            if (!state.cages[nextCoord]) {
+                this.moves.push({ coord: nextCoord, type: 'move' })
             } else {
                 return
             }
-            nextCoord = LETTERS[startLetter] + (+this.coord[1]+2)
-            if (!state.cages[nextCoord] && +this.coord[1]==2){
-                this.moves.push( {coord: nextCoord, type:'move'})
-            } else {
-                return 
-            }
-        } else if (this.color === 'black'){
-            let nextTakekoords = [LETTERS[startLetter-1]+(+this.coord[1]-1), LETTERS[startLetter+1]+(+this.coord[1]-1)]
-            nextTakekoords.forEach(coord=>{
-                if(coord && state.cages[coord] && state.cages[coord].color !== this.color){
-                    this.moves.push( {coord: coord, type:'take'})
-                }
-            })
-            let nextCoord = LETTERS[startLetter] + (+this.coord[1]-1)
-            if (!state.cages[nextCoord]){
-                this.moves.push( {coord: nextCoord, type:'move'})
+            nextCoord = LETTERS[startLetter] + (+this.coord[1] + 2)
+            if (!state.cages[nextCoord] && +this.coord[1] == 2) {
+                this.moves.push({ coord: nextCoord, type: 'move' })
             } else {
                 return
             }
-            nextCoord = LETTERS[startLetter] + (+this.coord[1]-2)
-            if (!state.cages[nextCoord] && +this.coord[1]==7){
-                this.moves.push( {coord: nextCoord, type:'move'})
+        } else if (this.color === 'black') {
+            let nextTakekoords = [LETTERS[startLetter - 1] + (+this.coord[1] - 1), LETTERS[startLetter + 1] + (+this.coord[1] - 1)]
+            nextTakekoords.forEach(coord => {
+                if (coord && state.cages[coord] && state.cages[coord].color !== this.color) {
+                    this.moves.push({ coord: coord, type: 'take' })
+                }
+            })
+            let nextCoord = LETTERS[startLetter] + (+this.coord[1] - 1)
+            if (!state.cages[nextCoord]) {
+                this.moves.push({ coord: nextCoord, type: 'move' })
+            } else {
+                return
+            }
+            nextCoord = LETTERS[startLetter] + (+this.coord[1] - 2)
+            if (!state.cages[nextCoord] && +this.coord[1] == 7) {
+                this.moves.push({ coord: nextCoord, type: 'move' })
             }
         }
     }
 }
 
-class Horse extends Figure{
-    constructor(color){
+class Horse extends Figure {
+    constructor(color) {
         super("Horse", color)
     }
 
-    calcMoves(){
+    calcMoves() {
         this.moves = []
 
         const startLetter = LETTERS.findIndex((el) => el === this.coord[0])
@@ -403,8 +433,8 @@ class Horse extends Figure{
             LETTERS[startLetter - 2] + (startNum - 1),
         ]
 
-        for (let move of validMoves){
-            if (cages.find(cage=>cage.dataset.cageName===move)){
+        for (let move of validMoves) {
+            if (cages.find(cage => cage.dataset.cageName === move)) {
                 this._checkMove(move)
             }
         }
@@ -420,7 +450,7 @@ const figureTypes = {
     Horse
 }
 
-function placeNewFigureFactory(color){
+function placeNewFigureFactory(color) {
     return function (type, coord) {
         if (!Object.keys(figureTypes).includes(type)) return
         const figure = new figureTypes[type](color);
@@ -437,12 +467,12 @@ const placeNewBlackFigure = placeNewFigureFactory("black");
 
 
 function startGame(whiteFigures, blackFigures) {
-    whiteFigures.forEach(([type, place])=>{
+    whiteFigures.forEach(([type, place]) => {
         placeNewWhiteFigure(type, place)
     })
-    blackFigures.forEach(([type, place])=>{
+    blackFigures.forEach(([type, place]) => {
         placeNewBlackFigure(type, place)
     })
 }
-// startGame(whiteFigures, blackFigures);
-startGame(whiteFiguresDemo, blackFiguresDemo);
+startGame(whiteFigures, blackFigures);
+// startGame(whiteFiguresDemo, blackFiguresDemo);
