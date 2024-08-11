@@ -41,11 +41,8 @@ class Board {
     }
 
     removeAllFigures() {
-        // console.trace('Удаляем все фигуры');
-
-        console.log(this.figures);
+        if (this.figures.length==0) return
         let i = this.figures.length - 1;
-        // debugger;
         while (i >= 0) {
             const figure = this.figures[i];
             console.log('this.figures.length', this.figures.length);
@@ -76,8 +73,9 @@ for (let i = 8; i > 0; i--) {
 }
 
 
-function initBoard() {
+function initBoard(whiteFigures, blackFigures) {
     state.removeAllFigures()
+    startGame(whiteFigures, blackFigures)
 }
 
 class Figure {
@@ -312,7 +310,7 @@ class King extends Figure {
         delete state.cages[this.coord];
         state.figures.splice(state.figures.findIndex(el => (el === this)), 1)
         if (mode === 'take') {
-            initBoard()
+            initBoard(whiteFigures, blackFigures)
         }
     }
 
@@ -463,9 +461,6 @@ function placeNewFigureFactory(color) {
 const placeNewWhiteFigure = placeNewFigureFactory("white");
 const placeNewBlackFigure = placeNewFigureFactory("black");
 
-
-
-
 function startGame(whiteFigures, blackFigures) {
     whiteFigures.forEach(([type, place]) => {
         placeNewWhiteFigure(type, place)
@@ -474,5 +469,8 @@ function startGame(whiteFigures, blackFigures) {
         placeNewBlackFigure(type, place)
     })
 }
-startGame(whiteFigures, blackFigures);
+// startGame(whiteFigures, blackFigures);
 // startGame(whiteFiguresDemo, blackFiguresDemo);
+
+// initBoard(whiteFigures, blackFigures);
+initBoard(whiteFiguresDemo, blackFiguresDemo);
