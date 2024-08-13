@@ -79,7 +79,23 @@ body {
   margin: 0 auto;
   color: white; }
 
+#content.flip .topIndex, #content.flip .botIndex {
+  flex-direction: row-reverse; }
+
+#content.flip .leftIndex, #content.flip .rightIndex {
+  flex-direction: column-reverse; }
+
+#content.flip #chessDesk {
+  transform: rotate(180deg); }
+  #content.flip #chessDesk .figure {
+    box-sizing: border-box;
+    padding-top: 10px;
+    transform: rotate(180deg); }
+    #content.flip #chessDesk .figure.active {
+      top: 5px; }
+
 #chessDesk {
+  transition: all 0.3s ease;
   border: 1px solid black;
   width: 640px;
   height: 640px;
@@ -180,7 +196,8 @@ body {
   width: 100%;
   display: flex;
   justify-items: space-between;
-  padding: 5px 0; }
+  padding: 5px 0;
+  flex-direction: row; }
   .topIndexLetter {
     width: 82px;
     text-align: center; }
@@ -188,7 +205,8 @@ body {
 .botIndex {
   width: 100%;
   display: flex;
-  justify-items: space-between; }
+  justify-items: space-between;
+  flex-direction: row; }
   .botIndexLetter {
     width: 82px;
     text-align: center;

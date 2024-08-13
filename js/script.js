@@ -7,6 +7,7 @@ const chessDesk = document.querySelector('#chessDesk');
 const cages = Array.from(chessDesk.querySelectorAll('.chessDeskCage'));
 const historyHTML = document.querySelector('#history')
 const turnSpan = document.querySelector('.turnSpan');
+const pawnTransformTooltipHTML = document.querySelector('.pawnTransformTooltip')
 
 const colorTextRussian = {
     white: 'Белые',
@@ -37,7 +38,7 @@ class Board {
         turnSpan.classList.add(color);
         turnSpan.textContent = colorTextRussian[color];
         this.turn = color;
-        // content.classList.toggle('flip')
+        content.classList.toggle('flip')
     }
 
     removeAllFigures() {
