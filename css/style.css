@@ -1,3 +1,6 @@
+body {
+  padding-top: 70px; }
+
 .background {
   position: fixed;
   top: 0;
@@ -6,6 +9,27 @@
   height: 100vh;
   background: url(../img/desk.jpg);
   z-index: -1; }
+
+.pawnTransformTooltip {
+  display: flex;
+  width: 320px;
+  position: absolute;
+  background-color: #b7b7b7;
+  height: 80px;
+  align-items: center;
+  bottom: 0; }
+  .pawnTransformTooltip.hide {
+    display: none; }
+  .pawnTransformTooltip .tooltipBtn {
+    box-sizing: border-box;
+    width: 100%;
+    height: 80px;
+    padding: 10px 0; }
+    .pawnTransformTooltip .tooltipBtn:hover {
+      background-color: #adadad; }
+    .pawnTransformTooltip .tooltipBtn img {
+      display: block;
+      margin: 0 auto; }
 
 #absoluteWrapper {
   position: absolute;
@@ -141,9 +165,9 @@
       background-color: #616161; }
     #chessDesk .chessDeskCage .figure {
       width: 100%;
-      height: 100%; }
+      height: 100%;
+      padding-top: 10px; }
       #chessDesk .chessDeskCage .figure img {
-        height: 100%;
         margin: 0 auto;
         display: block; }
     #chessDesk .chessDeskCage .figure.active {

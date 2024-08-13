@@ -1,6 +1,7 @@
 "use strict";
-import { whiteFigures, blackFigures } from './games/classic.js'
+import { whiteFigures, blackFigures } from './games/classic.js';
 import { whiteFigures as whiteFiguresDemo, blackFigures as blackFiguresDemo } from './games/testEndGame.js';
+import { whiteFigures as whiteFiguresPawnDemo, blackFigures as blackFiguresPawnDemo } from './games/testPawnTransform.js';
 
 const chessDesk = document.querySelector('#chessDesk');
 const cages = Array.from(chessDesk.querySelectorAll('.chessDeskCage'));
@@ -21,7 +22,6 @@ class Board {
     }
 
     addHistoryPoint(pointData){
-        console.log(pointData);
         this.prevMoves.push(pointData)
         const point = document.createElement('div')
         point.classList.add('historyPoint') 
@@ -45,8 +45,7 @@ class Board {
         let i = this.figures.length - 1;
         while (i >= 0) {
             const figure = this.figures[i];
-            console.log('this.figures.length', this.figures.length);
-            console.log(i--, figure);
+            i--
             if (figure.type == 'King') {
                 figure.deleteFigure('init')
                 continue
@@ -129,6 +128,10 @@ class Figure {
         cages
             .find(el => el.dataset.cageName === coord)
             .append(this.figure);
+    }
+
+    static checkValidCoord(coord){
+        return coord.length == 2 && LETTERS.includes(coord[0]) && +coord[1]>0 && +coord[1]<9
     }
 
     deleteFigure() {
@@ -367,9 +370,13 @@ class Pawn extends Figure {
     }
 
     calcMoves() {
+
         this.moves = []
         let startLetter = LETTERS.findIndex((el) => el === this.coord[0])
         if (this.color === 'white') {
+            if (+this.coord[1] == 8){
+                this.transform()
+            }
             let nextTakekoords = [LETTERS[startLetter - 1] + (+this.coord[1] + 1), LETTERS[startLetter + 1] + (+this.coord[1] + 1)]
             nextTakekoords.forEach((coord, i) => {
                 if (coord && state.cages[coord] && state.cages[coord].color !== this.color) {
@@ -377,7 +384,7 @@ class Pawn extends Figure {
                 }
             })
             let nextCoord = LETTERS[startLetter] + (+this.coord[1] + 1)
-            if (!state.cages[nextCoord]) {
+            if (!state.cages[nextCoord] && Figure.checkValidCoord(nextCoord)) {
                 this.moves.push({ coord: nextCoord, type: 'move' })
             } else {
                 return
@@ -388,7 +395,11 @@ class Pawn extends Figure {
             } else {
                 return
             }
+            
         } else if (this.color === 'black') {
+            if (+this.coord[1] == 1){
+                this.transform()
+            }
             let nextTakekoords = [LETTERS[startLetter - 1] + (+this.coord[1] - 1), LETTERS[startLetter + 1] + (+this.coord[1] - 1)]
             nextTakekoords.forEach(coord => {
                 if (coord && state.cages[coord] && state.cages[coord].color !== this.color) {
@@ -396,7 +407,7 @@ class Pawn extends Figure {
                 }
             })
             let nextCoord = LETTERS[startLetter] + (+this.coord[1] - 1)
-            if (!state.cages[nextCoord]) {
+            if (!state.cages[nextCoord] && Figure.checkValidCoord(nextCoord)) {
                 this.moves.push({ coord: nextCoord, type: 'move' })
             } else {
                 return
@@ -404,8 +415,15 @@ class Pawn extends Figure {
             nextCoord = LETTERS[startLetter] + (+this.coord[1] - 2)
             if (!state.cages[nextCoord] && +this.coord[1] == 7) {
                 this.moves.push({ coord: nextCoord, type: 'move' })
+            } else {
+                return
             }
+            this.transform()
         }
+    }
+
+    transform(){
+        
     }
 }
 
@@ -472,5 +490,6 @@ function startGame(whiteFigures, blackFigures) {
 // startGame(whiteFigures, blackFigures);
 // startGame(whiteFiguresDemo, blackFiguresDemo);
 
-// initBoard(whiteFigures, blackFigures);
-initBoard(whiteFiguresDemo, blackFiguresDemo);
+initBoard(whiteFigures, blackFigures);
+// initBoard(whiteFiguresDemo, blackFiguresDemo);
+// initBoard(whiteFiguresPawnDemo, blackFiguresPawnDemo);
