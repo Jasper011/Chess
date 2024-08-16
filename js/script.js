@@ -8,6 +8,10 @@ const cages = Array.from(chessDesk.querySelectorAll('.chessDeskCage'));
 const historyHTML = document.querySelector('#history')
 const turnSpan = document.querySelector('.turnSpan');
 const pawnTransformTooltipHTML = document.querySelector('.pawnTransformTooltip')
+const newGameBtn = document.querySelector('.newGameBtn')
+const saveListHTML = document.querySelector('.saves')
+
+
 
 const colorTextRussian = {
     white: 'Белые',
@@ -23,11 +27,66 @@ class Board {
         this.boardFlipMode = false
     }
 
-    saveToLocalStorage(id){
+    initBoard() {
+        let count = 0
+        for (let i = 8; i > 0; i--) {
+            for (let j = 0; j < 8; j++) {
+                cages[count].dataset.cageName = LETTERS[j] + i;
+                count++;
+            }
+        }
+        this.refreshMenu()
+        this.startGame(whiteFigures, blackFigures)
+    }
+
+    addHandlersToLoadBtns(){
+        for (let loadBtn of saveListHTML.querySelectorAll('.save')){
+            loadBtn.addEventListener('click', (event)=>{
+                const id = loadBtn.querySelector('.id').textContent
+                this.loadFromLocalStorage(id)
+                loadBtn.querySelector('.deleteSaveBtn').addEventListener('click', ()=>{
+                    this.removeSaveFromLocalStorage(id)
+                    this.refreshMenu()
+                    event.stopPropagation()
+                }, false)
+            })
+        }
+    }
+
+    addHandlersToSaveBtns(){
+        for (let saveBtn of document.querySelectorAll('.emptySaveCage')){
+            saveBtn.addEventListener('click', ()=>{
+                state.saveToLocalStorage(this.getSavesFromLocalStorage().length + 1)
+                this.refreshMenu()
+            })
+        }
+    }
+
+    displaySaves(){
+        const emtySaveCages = document.querySelectorAll('.emptySaveCage')
+        for (let save of this.getSavesFromLocalStorage()){
+            const saveHTML = document.createElement('div')
+            saveHTML.classList.add('save')
+            saveHTML.innerHTML = `<span class="id">${save.id}</span> <span class="moveCount">${save.movesHistory.length} ходов</span><div class="deleteSaveBtn"><img src="img/deleteIcon.png"></div>`
+            emtySaveCages[save.id-1].remove()
+            saveListHTML.append(saveHTML)
+        }
+    }
+
+    getSavesFromLocalStorage(){
         let saves = JSON.parse(localStorage.getItem('saves'))
-        if (!saves || typeof saves !== 'array'){
+        if (!saves){
             localStorage.setItem('saves', '[]')
             saves = []
+        }
+        return saves
+    }
+
+    saveToLocalStorage(id){
+        const saves = this.getSavesFromLocalStorage()
+        if (saves.length >= 4){
+            console.warn('Максимальное количество сохранений. Удалите одно сохранение, чтобы продолжить!');
+            return
         }
         if (!saves.find(save=>save.id==id)){
             saves.push({
@@ -41,23 +100,28 @@ class Board {
 
     loadFromLocalStorage(id){
         this.removeAllFigures()
-        let saves = JSON.parse(localStorage.getItem('saves'))
-        if (!saves){
-            localStorage.setItem('saves', '[]')
-            saves = []
-        }
+        const saves = this.getSavesFromLocalStorage()
         const save = saves.find(save=>save.id==id)
-        if (save){
-            for (let pointData of save.movesHistory){
+        this.applyState(save)
+    }
+
+    cleanLocalStorage(){
+        localStorage.setItem('saves', '[]')
+    }
+
+    removeSaveFromLocalStorage(id){
+        const saves = this.getSavesFromLocalStorage()
+        saves.splice(saves.findIndex(save=>save.id==id), 1)
+        localStorage.setItem('saves', JSON.stringify(saves))
+    }
+
+    applyState(newState){
+        if (newState){
+            for (let pointData of newState.movesHistory){
                 this.addHistoryPoint(pointData)
             }
-            for(let position in save.figurePositions){
-                const figure = save.figurePositions[position]
-                console.log(position, figure);
-                console.log(figure.color, figure.type, figure.coord);
-                console.log(figure);
-                
-                
+            for(let position in newState.figurePositions){
+                const figure = newState.figurePositions[position]
                 if (figure.color == 'white'){
                     placeNewWhiteFigure(figure.type, position)
                 } else {
@@ -65,6 +129,12 @@ class Board {
                 }
             }
         }
+    }
+
+    refreshMenu(){
+        this.displaySaves()
+        this.addHandlersToLoadBtns()
+        this.addHandlersToSaveBtns()
     }
 
     addHistoryPoint(pointData){
@@ -103,29 +173,25 @@ class Board {
 
         }
     }
+
+    startGame(whiteFigures, blackFigures) {
+        state.removeAllFigures()
+        plaseAllFigures(whiteFigures, blackFigures)
+        this.cleanHistoyHTML()
+        this.turn = 'white'
+    }
+
+    cleanHistoyHTML(){
+        historyHTML.innerHTML = ''
+    }
 }
 
 const state = new Board();
+newGameBtn.addEventListener('click', ()=>{state.startGame(whiteFigures, blackFigures)})
 window.state = state;
 state.changeTurn()
 
 const LETTERS = Array.from('abcdefgh')
-
-//TODO: вынести в отдельную функцию (или в инит)
-let count = 0
-
-for (let i = 8; i > 0; i--) {
-    for (let j = 0; j < 8; j++) {
-        cages[count].dataset.cageName = LETTERS[j] + i;
-        count++;
-    }
-}
-
-// TODO: переименовать (напр. startGame, restartGame, restartBoard...) и сделать новую функцию типа createBoard
-function startGame(whiteFigures, blackFigures) {
-    state.removeAllFigures()
-    plaseAllFigures(whiteFigures, blackFigures)
-}
 
 class Figure {
     constructor(type, color) {
@@ -359,7 +425,7 @@ class King extends Figure {
         delete state.figurePositions[this.coord];
         state.figures.splice(state.figures.findIndex(el => (el === this)), 1)
         if (mode === 'take') {
-            initBoard(whiteFigures, blackFigures)
+            state.startGame(whiteFigures, blackFigures)
         }
     }
 
@@ -526,7 +592,6 @@ function placeNewFigureFactory(color) {
 const placeNewWhiteFigure = placeNewFigureFactory("white");
 const placeNewBlackFigure = placeNewFigureFactory("black");
 
-// TODO: rename placeAllFiguresOnBoard
 function plaseAllFigures(whiteFigures, blackFigures) {
     whiteFigures.forEach(([type, place]) => {
         placeNewWhiteFigure(type, place)
@@ -535,14 +600,8 @@ function plaseAllFigures(whiteFigures, blackFigures) {
         placeNewBlackFigure(type, place)
     })
 }
-// startGame(whiteFigures, blackFigures);
-// startGame(whiteFiguresDemo, blackFiguresDemo);
 
-startGame(whiteFigures, blackFigures);
-// initBoard(whiteFiguresDemo, blackFiguresDemo);
-// initBoard(whiteFiguresPawnDemo, blackFiguresPawnDemo);
-
-
+state.initBoard()
 
 // TODO: 
 

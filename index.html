@@ -9,20 +9,6 @@
     <title>Chess</title>
 </head>
 <body>
-<!-- 
-    <div class="mirror">11</div>
-    <style>
-        .mirror {
-            position: fixed;
-            right: 0;
-            top: 0;
-            width: 100px;
-            height: 100px;
-            /* background-color: lightgreen; */
-            background: -moz-element(#content);
-        }
-    </style> -->
-
 
     <div class="pawnTransformTooltip hide">
         <div class="tooltipBtn horse"><img src="img/horse.png"></div>
@@ -38,8 +24,8 @@
     </div>
     <div class="background">
     </div>
-    <div id="content" class="flip">
-        <div class="wrapper">
+    <div id="content">
+        <div class="gameWrapper">
             <div class="leftIndex">
                 <div class="leftIndexNum">8</div>
                 <div class="leftIndexNum">7</div>
@@ -149,8 +135,17 @@
                 <div class="rightIndexNum">1</div>
             </div>
         </div>
+        <div class="menuWrapper">
+            <h3>Меню</h3>
+            <div class="newGameBtn">Новая игра</div>
+            <div class="saves">
+                <div class="emptySaveCage">Сохранить</div>
+                <div class="emptySaveCage">Сохранить</div>
+                <div class="emptySaveCage">Сохранить</div>
+                <div class="emptySaveCage">Сохранить</div>
+            </div>
+        </div>
     </div>
-    <!-- <button>New game / Reset game</button> -->
     <script type="module" src="js/script.js"></script>
 </body>
 </html>

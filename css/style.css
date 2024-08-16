@@ -69,14 +69,74 @@ body {
 #boardWrapper {
   width: 640px; }
 
-.wrapper {
+.gameWrapper {
   display: flex;
-  width: 100%; }
+  width: 100%;
+  margin-right: 100px; }
+
+.menuWrapper {
+  padding: 24px;
+  background-color: #b7b7b7;
+  border-radius: 12px;
+  width: 500px; }
+  .menuWrapper h3 {
+    text-align: center; }
+  .menuWrapper .newGameBtn {
+    width: 50%;
+    border: 1px solid black;
+    padding: 10px 20px;
+    margin: 0 auto;
+    text-align: center;
+    background-color: #a8a8a8;
+    border-radius: 10px;
+    margin-bottom: 30px; }
+    .menuWrapper .newGameBtn:hover {
+      background-color: #999999; }
+  .menuWrapper .emptySaveCage {
+    box-sizing: border-box;
+    height: 64px;
+    margin: 0 auto;
+    border: 1px solid black;
+    padding: 20px 0;
+    background-color: #a8a8a8;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    text-align: center; }
+    .menuWrapper .emptySaveCage:hover {
+      background-color: #999999; }
+  .menuWrapper .save {
+    box-sizing: border-box;
+    height: 64px;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    border: 1px solid black;
+    padding: 10px 20px;
+    background-color: #a8a8a8;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; }
+    .menuWrapper .save:hover {
+      background-color: #999999; }
+    .menuWrapper .save .id {
+      font-size: 24px; }
+    .menuWrapper .save .deleteSaveBtn {
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      border: 1px solid black;
+      background-color: #9a3939; }
+      .menuWrapper .save .deleteSaveBtn img {
+        width: 100%;
+        height: auto; }
+      .menuWrapper .save .deleteSaveBtn:hover {
+        background-color: #612121; }
 
 #content {
-  width: 676px;
+  display: flex;
+  width: 60%;
   transition: 0.3s all ease;
-  margin: 0 auto;
+  margin-left: 300px;
   color: white; }
 
 #content.flip .topIndex, #content.flip .botIndex {
