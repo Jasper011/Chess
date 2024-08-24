@@ -1,9 +1,11 @@
 import { LETTERS } from '../../constants/index.js'
 import { Figure } from '../Figure/index.js'
+import { whiteFigures, blackFigures } from "../../games/classic.js";
 
 export class King extends Figure {
-    constructor(color, cages) {
+    constructor(color, cages, state) {
         super("King", color, cages)
+        this.state = state
     }
 
     calcMoves() {
@@ -27,7 +29,7 @@ export class King extends Figure {
         delete state.figurePositions[this.coord];
         state.figures.splice(state.figures.findIndex(el => (el === this)), 1)
         if (mode === 'take') {
-            state.startGame(whiteFigures, blackFigures)
+            state.endGame()
         }
     }
 

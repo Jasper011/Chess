@@ -54,8 +54,6 @@ class Board {
         for (let loadBtn of saveListHTML.querySelectorAll('.save')){
             const id = loadBtn.querySelector('.id').textContent
             loadBtn.addEventListener('click', (event)=>{
-                console.log(1);
-                
                 this.loadFromLocalStorage(id)
             })
             loadBtn.querySelector('.deleteSaveBtn').addEventListener('click', (event)=>{
@@ -195,7 +193,47 @@ class Board {
         }
     }
 
+    endGame(){
+        const game = document.querySelector('.gameWrapper')
+        game.classList.add('hide')
+        const modal = document.createElement('div')
+        modal.classList.add('endGameModal')
+        modal.innerHTML = `
+        <h3>Конец игры!</h3>
+        <p>Победили ${colorTextRussian[this.turn]}</p>
+        `
+        const newGameBtn = document.createElement('div')
+        newGameBtn.classList.add('newGameBtn')
+        newGameBtn.classList.add('btn')
+        newGameBtn.textContent = 'Новая игра'
+        newGameBtn.addEventListener('click', ()=>{
+            state.startGame(whiteFigures, blackFigures);
+            modal.remove();
+            game.classList.remove('hide')
+        })
+        modal.append(newGameBtn)
+        const saveForReviewBtn = document.createElement('div')
+        saveForReviewBtn.classList.add('saveForReviewBtn')
+        saveForReviewBtn.classList.add('btn')
+        saveForReviewBtn.textContent = 'Сохранить для просмотра'
+        modal.append(saveForReviewBtn)
+        content.prepend(modal)
+    }
+
+    addNewFigureFactory(color) {
+        return function (type, coord) {
+            if (!Object.keys(figureTypes).includes(type)) return
+            let figure;
+            if (type=='King') figure = new figureTypes[type](color, cages, state)
+            else figure = new figureTypes[type](color, cages);
+            figure.place(coord);
+            return figure;
+        }
+    
+    }
+
     startGame(whiteFigures, blackFigures) {
+        content.classList.remove('hide')
         state.removeAllFigures()
         plaseAllFigures(whiteFigures, blackFigures)
         this.cleanHistoyHTML()
@@ -224,19 +262,8 @@ const figureTypes = {
     Horse
 }
 
-// Перенести в Board?
-function placeNewFigureFactory(color) {
-    return function (type, coord) {
-        if (!Object.keys(figureTypes).includes(type)) return
-        const figure = new figureTypes[type](color, cages);
-        figure.place(coord);
-        return figure;
-    }
-
-}
-
-const placeNewWhiteFigure = placeNewFigureFactory("white");
-const placeNewBlackFigure = placeNewFigureFactory("black");
+const placeNewWhiteFigure = state.addNewFigureFactory("white");
+const placeNewBlackFigure = state.addNewFigureFactory("black");
 
 function plaseAllFigures(whiteFigures, blackFigures) {
     whiteFigures.forEach(([type, place]) => {

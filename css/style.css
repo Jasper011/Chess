@@ -1,5 +1,7 @@
 body {
   padding-top: 70px; }
+  body .hide {
+    display: none !important; }
 
 .background {
   position: fixed;
@@ -18,8 +20,6 @@ body {
   height: 80px;
   align-items: center;
   bottom: 0; }
-  .pawnTransformTooltip.hide {
-    display: none; }
   .pawnTransformTooltip .tooltipBtn {
     box-sizing: border-box;
     width: 100%;
@@ -136,8 +136,29 @@ body {
   display: flex;
   width: 60%;
   transition: 0.3s all ease;
-  margin-left: 300px;
+  margin: 0 auto;
+  gap: 36px;
   color: white; }
+  #content .endGameModal {
+    width: 50%;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    background-color: #b7b7b7; }
+    #content .endGameModal h3 {
+      font-size: 36px; }
+    #content .endGameModal p {
+      font-size: 24px; }
+    #content .endGameModal .btn {
+      width: 50%;
+      padding: 10px;
+      margin: 0 auto;
+      margin-bottom: 15px;
+      border: 1px solid black;
+      border-radius: 8px;
+      background-color: #a8a8a8; }
+      #content .endGameModal .btn:hover {
+        background-color: #8f8d8d; }
 
 #content.flip .topIndex, #content.flip .botIndex {
   flex-direction: row-reverse; }
