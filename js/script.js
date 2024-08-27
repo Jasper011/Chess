@@ -112,6 +112,7 @@ class Board {
                 id: id,
                 figurePositions: this.figurePositions,
                 movesHistory: this.movesHistory,
+                turn: this.turn
             })
         }
         localStorage.setItem('saves', JSON.stringify(saves))
@@ -135,6 +136,9 @@ class Board {
     }
 
     applyState(newState){
+        this.cleanHistoyHTML()
+        this.movesHistory = []
+        this.changeTurnToColor(newState.turn)
         if (newState){
             for (let pointData of newState.movesHistory){
                 this.addHistoryPoint(pointData)
@@ -148,6 +152,11 @@ class Board {
                 }
             }
         }
+    }
+
+    transformFigure(figure, type){
+        figure.deleteFigure()
+        this.addNewFigureFactory(figure.color)(type, figure.coord)
     }
 
     refreshMenu(){
@@ -164,6 +173,15 @@ class Board {
         <img src="img/${pointData.figureType}.png" class="figureImg ${pointData.color}">
         <span class="moves">${pointData.prev}-${pointData.current}</span>`
         historyHTML.append(point)
+    }
+
+    changeTurnToColor(color){
+        if (color == 'white'||color=='black'){
+            turnSpan.classList.remove(this.turn);
+            this.turn = color
+            turnSpan.classList.add(this.turn);
+            turnSpan.textContent = colorTextRussian[color];
+        }
     }
 
     changeTurn() {
@@ -224,7 +242,7 @@ class Board {
         return function (type, coord) {
             if (!Object.keys(figureTypes).includes(type)) return
             let figure;
-            if (type=='King') figure = new figureTypes[type](color, cages, state)
+            if (type=='King'||type=='Pawn') figure = new figureTypes[type](color, cages, state)
             else figure = new figureTypes[type](color, cages);
             figure.place(coord);
             return figure;
@@ -233,11 +251,13 @@ class Board {
     }
 
     startGame(whiteFigures, blackFigures) {
+        this.movesHistory = []
         content.classList.remove('hide')
         state.removeAllFigures()
         plaseAllFigures(whiteFigures, blackFigures)
         this.cleanHistoyHTML()
-        this.turn = 'white'
+        this.changeTurnToColor('white')
+        // document.querySelectorAll('.endGameModal').forEach((el)=>{el.remove()})
     }
 
     cleanHistoyHTML(){

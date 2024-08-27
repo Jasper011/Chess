@@ -2,8 +2,9 @@ import { LETTERS } from '../../constants/index.js'
 import { Figure } from '../Figure/index.js'
 
 export class Pawn extends Figure {
-    constructor(color, cages) {
+    constructor(color, cages, state) {
         super("Pawn", color, cages)
+        this.state = state
     }
 
     calcMoves() {
@@ -55,11 +56,21 @@ export class Pawn extends Figure {
             } else {
                 return
             }
-            this.transform()
         }
     }
 
     transform(){
-        // this = 
+        const transformTooltip = document.createElement('div')
+        transformTooltip.classList.add('transformTooltip')
+        transformTooltip.innerHTML = `<div class="tooltipBtn Horse"><img src="img/horse.png"></div>
+        <div class="tooltipBtn Rook"><img src="img/rook.png"></div>
+        <div class="tooltipBtn Queen"><img src="img/queen.png"></div>
+        <div class="tooltipBtn Bishop"><img src="img/bishop.png"></div>`
+        transformTooltip.addEventListener('click', (event)=>{
+            this.state.transformFigure(this, event.target.classList[1])
+            transformTooltip.remove()
+        })
+        document.body.append(transformTooltip)
+        
     }
 }

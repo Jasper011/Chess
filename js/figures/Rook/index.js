@@ -3,8 +3,6 @@ import { Figure } from '../Figure/index.js'
 
 export class Rook extends Figure {
     constructor(color, cages) {
-        console.log('Rook from import 2');
-        
         super('Rook', color, cages);
     }
 

@@ -6,8 +6,6 @@ import { Queen } from "./Queen/index.js";
 import { Pawn } from "./Pawn/index.js";
 import { Horse } from "./Horse/index.js";
 
-console.log(Rook);
-
 const figureTypes = {
     Rook,
     Bishop,
