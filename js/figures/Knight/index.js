@@ -1,9 +1,9 @@
 import { LETTERS } from '../../constants/index.js'
 import { Figure } from '../Figure/index.js'
 
-export class Horse extends Figure {
+export class Knight extends Figure {
     constructor(color, cages) {
-        super("Horse", color, cages)
+        super("Knight", color, cages)
     }
 
     calcMoves() {

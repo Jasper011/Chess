@@ -62,7 +62,7 @@ export class Pawn extends Figure {
     transform(){
         const transformTooltip = document.createElement('div')
         transformTooltip.classList.add('transformTooltip')
-        transformTooltip.innerHTML = `<div class="tooltipBtn Horse"><img src="img/horse.png"></div>
+        transformTooltip.innerHTML = `<div class="tooltipBtn Knight"><img src="img/knight.png"></div>
         <div class="tooltipBtn Rook"><img src="img/rook.png"></div>
         <div class="tooltipBtn Queen"><img src="img/queen.png"></div>
         <div class="tooltipBtn Bishop"><img src="img/bishop.png"></div>`

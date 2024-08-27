@@ -7,8 +7,8 @@ const whiteFigures = [
     ['King', 'e1'],
     ['Bishop', 'c1'],
     ['Bishop', 'f1'],
-    ['Horse', 'b1'],
-    ['Horse', 'g1'],
+    ['Knight', 'b1'],
+    ['Knight', 'g1'],
 ];
 
 
@@ -20,8 +20,8 @@ const blackFigures = [
     ['King', 'e5'],
     ['Bishop', 'c8'],
     ['Bishop', 'f8'],
-    ['Horse', 'b8'],
-    ['Horse', 'g8'],
+    ['Knight', 'b8'],
+    ['Knight', 'g8'],
 ];
 
 for (let i = 0; i <= 7; i++){

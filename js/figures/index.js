@@ -4,7 +4,7 @@ import { Rook } from "./Rook/index.js";
 import { King } from "./King/index.js";
 import { Queen } from "./Queen/index.js";
 import { Pawn } from "./Pawn/index.js";
-import { Horse } from "./Horse/index.js";
+import { Knight } from "./Knight/index.js";
 
 const figureTypes = {
     Rook,
@@ -12,7 +12,7 @@ const figureTypes = {
     King,
     Queen,
     Pawn,
-    Horse
+    Knight
 }
 
 export { 
@@ -22,6 +22,6 @@ export {
     King,
     Queen,
     Pawn,
-    Horse,
+    Knight,
     figureTypes
 };

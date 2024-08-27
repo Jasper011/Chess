@@ -11,7 +11,7 @@ import {
     King,
     Queen,
     Pawn,
-    Horse
+    Knight
 } from './figures/index.js';
 
 const chessDesk = document.querySelector('#chessDesk');
@@ -279,7 +279,7 @@ const figureTypes = {
     King,
     Queen,
     Pawn,
-    Horse
+    Knight
 }
 
 const placeNewWhiteFigure = state.addNewFigureFactory("white");
