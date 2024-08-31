@@ -127,6 +127,15 @@ export class Figure {
             let move = {
                 'coord': coord,
             }
+
+
+            if (true && this.type == 'KING' ) {
+                console.log('in IF');
+                move['type'] = 'castling'
+                this.moves.push(move);
+            } 
+
+
             if (!state.figurePositions[coord]) {
                 isStop = false;
                 move['type'] = 'move'

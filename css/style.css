@@ -73,13 +73,13 @@ body {
 .gameWrapper {
   display: flex;
   width: 100%;
-  margin-right: 100px; }
+  margin-right: 50px; }
 
 .menuWrapper {
   padding: 24px;
   background-color: #b7b7b7;
   border-radius: 12px;
-  width: 500px; }
+  width: 50%; }
   .menuWrapper h3 {
     text-align: center; }
   .menuWrapper .newGameBtn {
@@ -138,7 +138,6 @@ body {
   width: 60%;
   transition: 0.3s all ease;
   margin: 0 auto;
-  gap: 36px;
   color: white; }
   #content .endGameModal {
     width: 50%;
