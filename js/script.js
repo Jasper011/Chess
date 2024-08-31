@@ -80,9 +80,8 @@ class Board {
 
     addHandlersToSaveBtns() {
         for (let saveBtn of document.querySelectorAll('.emptySaveCage')) {
-            saveBtn.addEventListener('click', () => {
-                state.saveToLocalStorage(this.getSavesFromLocalStorage().length + 1)
-                this.startGame(whiteFigures, blackFigures)
+            saveBtn.addEventListener('click', (event) => {
+                state.saveToLocalStorage(event.target.dataset.id)
                 this.refreshMenu()
             })
         }
@@ -90,21 +89,31 @@ class Board {
 
     displaySaves() {
         const saves = this.getSavesFromLocalStorage()
-        this.saveListHTML.innerHTML = ''
-        for (let i = 0; i < saves.length; i++) {
-            const save = saves[i]
-            const saveHTML = document.createElement('div')
-            saveHTML.classList.add('save')
-            saveHTML.innerHTML = `<span class="id">${save.id}</span> <span class="moveCount">${save.movesHistory.length} ходов</span><div class="deleteSaveBtn"><img src="img/deleteIcon.png"></div>`
-            this.saveListHTML.append(saveHTML)
-        }
-        for (let i = saves.length; i < 4; i++) {
+        this.saveListHTML.innerHTML = '';
+        function displaySaveBtn(id){
             const saveBtn = document.createElement('div')
             saveBtn.classList.add('emptySaveCage')
             saveBtn.textContent = 'Сохранить'
+            saveBtn.dataset.id = id
             this.saveListHTML.append(saveBtn)
         }
+        function displayLoadBtn(save){
+            const saveHTML = document.createElement('div');
+            saveHTML.classList.add('save');
+            saveHTML.innerHTML = `<span class="id">${save.id}</span> <span class="moveCount">${save.movesHistory.length} ходов</span><div class="deleteSaveBtn"><img src="img/deleteIcon.png"></div>`
+            this.saveListHTML.append(saveHTML)
+        }
+        for (let i = 1; i <= 4; i++){
+            const save = saves.find((save)=>save.id==i)
+            if (save){
+                displayLoadBtn.call(this, save)
+            } else {
+                displaySaveBtn.call(this, i)
+            }
+        }
     }
+
+
 
     getSavesFromLocalStorage() {
         let saves = JSON.parse(localStorage.getItem('saves'))
