@@ -5,6 +5,7 @@ export class Pawn extends Figure {
     constructor(color, cages, state) {
         super("Pawn", color, cages)
         this.state = state
+        this.cost = 1
     }
 
     calcMoves() {

@@ -23,6 +23,10 @@ class Board {
         this.figurePositions = {};
         this.movesHistory = [];
         this.boardFlipMode = false;
+        this.score = {
+            white: 39,
+            black:39
+        }
 
         this.chessDesk = document.querySelector('#chessDesk');
         this.historyHTML = document.querySelector('#history')
@@ -180,6 +184,7 @@ class Board {
     transformFigure(figure, type) {
         figure.deleteFigure()
         this.addNewFigureFactory(figure.color)(type, figure.coord)
+        this.refreshScore()
     }
 
     refreshMenu() {
@@ -235,6 +240,8 @@ class Board {
     }
 
     endGame() {
+        console.trace('end');
+        
         const game = document.querySelector('.gameWrapper')
         game.classList.add('hide')
         const modal = document.createElement('div')
@@ -274,8 +281,27 @@ class Board {
 
     }
 
+    refreshScore(){
+        const score = {
+            white: 39,
+            black:39
+        }
+        for(let figure of this.figures){
+            if (figure.color == 'white'){
+                score.black -= figure.cost
+            } else{
+                score.white -= figure.cost
+            }
+        }
+        this.score = score
+    }
+
     startGame(whiteFigures, blackFigures) {
         this.movesHistory = []
+        this.score = {
+            white: 0,
+            black:0
+        }
         content.classList.remove('hide')
         state.removeAllFigures()
         this.placeAllFigures(whiteFigures, blackFigures)
@@ -298,7 +324,7 @@ state.initBoard()
 // 1. +Трансфрмация фигуры
 // 2. +- Доработать финал игры (сообщение + обнулять стейт + возможно сохранять последний стейт)
 // 3. Спрашивать подтверждение новой игры/загруки -- Сделать переменную, которая отслеживает, были ли изменения с начал игры/с последнего сохраненного(загруженного) стейта
-// 4.
+// 4. Взятие на проходе
 // 5. Рокировка (в обе стороны)
 
 

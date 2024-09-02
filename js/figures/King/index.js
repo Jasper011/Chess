@@ -25,6 +25,7 @@ export class King extends Figure {
         super("King", color, cages)
         this.wasMoved = false;
         this.state = state
+        this.cost = 0
     }
 
     calcMoves() {

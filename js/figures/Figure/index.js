@@ -12,6 +12,7 @@ export class Figure {
         this.isActive = false;
         this._create()
         this.cages = cages;
+        
     }
 
     _create() {
@@ -82,19 +83,19 @@ export class Figure {
                     this.figure.classList.add('active')
                     this.isActive = true;
                 } else if (this.color !== state.turn) {
-                    if (this.type == 'King') {
-                        this.deleteFigure()
-                        e.preventDefault()
-                        return
-                    }
                     const attackingFigure = state.figures.find(figure => figure.isActive)
                     if (!attackingFigure) { return }
                     const attackMoves = attackingFigure.moves
                     const move = attackMoves.find(move => move.coord === this.coord && move.type === 'take')
                     if (move) {
+                        if (this.type == 'King') {
+                            this.deleteFigure()
+                            return
+                        }
                         chessDesk.removeEventListener('click', move);
                         this.deleteFigure()
                         attackingFigure.place(move.coord)
+                        state.refreshScore()
                         attackingFigure.figure.classList.remove('active')
                         attackingFigure.isActive = false;
                         attackingFigure.figure.classList.remove('active')
