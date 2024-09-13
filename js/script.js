@@ -3,17 +3,13 @@ import { whiteFigures, blackFigures } from './games/classic.js';
 import { whiteFigures as whiteFiguresDemo, blackFigures as blackFiguresDemo } from './games/testEndGame.js';
 import { whiteFigures as whiteFiguresPawnDemo, blackFigures as blackFiguresPawnDemo } from './games/testPawnTransform.js';
 
-import { LETTERS } from "./constants/index.js";
+// import { state } from './Board.js';
+
+import { LETTERS, colorTextRussian } from "./constants/index.js";
 
 import {
     figureTypes
 } from './figures/index.js';
-
-// TODO: в класс или в константы убрать
-const colorTextRussian = {
-    white: 'Белые',
-    black: 'Чёрные'
-}
 
 class Board {
     constructor() {
@@ -272,9 +268,9 @@ class Board {
         function addNewFigure(type, coord) {
             if (!Object.keys(figureTypes).includes(type)) return
             let figure;
-            if (type == 'King' || type == 'Pawn') figure = new figureTypes[type](color, this.cages, state)
+            if (type == 'King' || type == 'Pawn') figure = new figureTypes[type](color, this.cages, this)
             else figure = new figureTypes[type](color, this.cages);
-            figure.place(coord);
+            figure.place(coord, true);
             return figure;
         }
         return addNewFigure.bind(this)
@@ -313,10 +309,11 @@ class Board {
         this.historyHTML.innerHTML = ''
     }
 }
-
 const state = new Board();
 
 state.initBoard()
+console.log(state);
+
 
 // TODO:
 
@@ -335,8 +332,9 @@ state.initBoard()
 // 3. Придумать минимальный подсчёт очков для финала игры (ходы, фигуры)
 // 4. + Несколько слотов для сохранения текущих игр, и возможность загружать их
 // 4.1 + Доработать - после загрузки есть проблемы со стейтом (отображжаемым около доски)
-// 4.2  Доработать - после сохранения игра наичнается заново (это плохо)
-// 4.2  Доработать - сохранять в нужный слот, а не следующий в очереди
+// 4.2 + Доработать - после сохранения игра наичнается заново (это плохо)
+// 4.3 + Доработать - сохранять в нужный слот, а не следующий в очереди
+// 4.4 Доработать - кнопку удалить сделать так, чтобы нельзя было нажать случайно
 // 5. Режим "посмотреть сохраненную игру" где нам по шагам показывается вся история игры
 // 5.1 Кнопки "назад"-"вперед", кнопка "стоп", кнопка "играть(воспроизводить)" (х1) ускоренная перемотка вперед-назад (х2-х4)
 

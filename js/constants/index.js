@@ -5,6 +5,10 @@
 
 
 export const LETTERS = Array.from('abcdefgh');
+export const colorTextRussian = {
+    white: 'Белые',
+    black: 'Чёрные'
+}
 
 
 

@@ -41,9 +41,31 @@ export class King extends Figure {
             }
         }
 
+        // TODO: починить И начать учитывать крайние случаи
         if(!this.wasMoved) {
-            this._checkMove("c1")
-            this._checkMove("g1")
+            const num = this.color === 'white' ? 1 : 8;
+            const isCastling = true;
+            let canLongCastle = true && !this.wasMoved;
+            let canShortCastle = true && !this.wasMoved;
+
+            for(let i = startLetter-1; i>0; i--){
+                const coord = LETTERS[i]+startNum
+                if (this.state.figurePositions[coord]){
+                    canLongCastle = false
+                }
+            }
+            for(let i = startLetter + 1; i<7; i++){
+                const coord = LETTERS[i]+startNum
+                if (this.state.figurePositions[coord]){
+                    canShortCastle = false
+                }
+            }
+            if(canLongCastle){
+                this._checkMove("c" + num, isCastling)
+            }
+            if(canShortCastle){
+                this._checkMove("g" + num, isCastling)
+            }
         }
 
     }

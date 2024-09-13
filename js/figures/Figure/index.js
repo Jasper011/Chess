@@ -1,16 +1,20 @@
 import { LETTERS } from '../../constants/index.js'
 
+// import { state } from '../../Board.js';
+
 export class Figure {
     // TODO: переделать чтобы конструктор принимал объект
     constructor(type, color, cages) {
+        // console.log(state);
         
         state.figures.push(this);
+        this.wasMoved = false;
         this.coord = undefined;
         this.type = type;
         this.color = color;
         this.moves = [];
         this.isActive = false;
-        this._create()
+        this._create();
         this.cages = cages;
         
     }
@@ -21,8 +25,10 @@ export class Figure {
         this.figure.innerHTML = `<img src="img/${this.type.toLowerCase()}.png" alt="img/${this.type.toLowerCase()}.png">`;
     }
 
-    place(coord) {
+    place(coord, isplace) {
         if (!state.figurePositions[coord]) {
+            if(!isplace) this.wasMoved = true 
+            
             const oldCoord = this.coord;
             delete state.figurePositions[oldCoord]
             this.coord = coord
@@ -108,21 +114,39 @@ export class Figure {
                 const coord = e.target.dataset.cageName;
                 const move = this.moves.find(move => move['coord'] === coord);
                 if (move && this.isActive && state.figures.includes(this)) {
-                    if (move.type === 'move') {
+                    if (move.type === 'move' || move.type === 'castling') {
+                        if (move.type === 'castling') {
+                            console.log('inside castling if');
+                            const isShortCastling = coord[0] === "g";
+                            const num = this.color === "white" ? 1 : 8;
+
+                            let [letter, newLetter] = isShortCastling ? ['h', 'f'] : ['a', 'd'];
+
+                            const rookCoord = letter + num;
+                            const foundedRook = state.figures.find(obj => obj.coord === rookCoord && !obj.wasMoved)
+                            if (!foundedRook) return
+
+                            foundedRook.place(newLetter + num);
+                            console.log(foundedRook);
+
+                            
+                        }
                         this.place(coord)
                         this.figure.classList.remove('active')
                         this.isActive = false;
                         this.figure.classList.remove('active')
+
                         state.changeTurn()
                         chessDesk.removeEventListener('click', move);
-                    }
+                    } 
+                    
                 }
             }.bind(this))
 
         }
     }
 
-    _checkMove(coord) {
+    _checkMove(coord, isCastling) {
         if (coord) {
             let isStop;
             let move = {
@@ -130,14 +154,10 @@ export class Figure {
             }
 
 
-            if (true && this.type == 'KING' ) {
-                console.log('in IF');
+            if (isCastling && this.type == 'King' && !state.figurePositions[coord]) {
                 move['type'] = 'castling'
                 this.moves.push(move);
-            } 
-
-
-            if (!state.figurePositions[coord]) {
+            } else if (!state.figurePositions[coord]) {
                 isStop = false;
                 move['type'] = 'move'
                 this.moves.push(move);
