@@ -28,7 +28,6 @@ class Board {
         this.historyHTML = document.querySelector('#history')
         this.turnSpan = document.querySelector('.turnSpan');
         this.newGameBtn = document.querySelector('.newGameBtn')
-        this.newGameBtn.addEventListener('click', () => { state.startGame(whiteFigures, blackFigures) })
         this.saveListHTML = document.querySelector('.saves')
         this.changeTurn()
 
@@ -64,11 +63,51 @@ class Board {
         this.startGame(whiteFigures, blackFigures)
     }
 
+    invokeConfirmationModal(){
+        return new Promise((resolve, reject) => {
+            const modal = document.createElement('div')
+            modal.classList.add('confirmModal')
+            modal.innerHTML = `
+            <h3>Подтвердить?</h3>
+            <div class="confirmAnswers">
+            <div class="yesBtn btn">Да</div><div class="noBtn btn">Нет</div>
+            </div>
+            `
+            const yesBtn = modal.querySelector('.yesBtn')
+            const noBtn = modal.querySelector('.noBtn')
+
+            document.body.append(modal)
+
+            yesBtn.addEventListener('click', () => {
+                resolve(true);
+                modal.remove()
+              });
+              noBtn.addEventListener('click', () => {
+                resolve(false);
+                modal.remove()
+              });
+        })
+    }
+
+    addHandlersToNewGameBtn(){
+        this.newGameBtn.addEventListener('click', () => {
+            this.invokeConfirmationModal().then(
+                isConfirmed=>{
+                    if(isConfirmed) this.startGame(whiteFigures, blackFigures)
+                }
+            )
+        })
+    }
+
     addHandlersToLoadBtns() {
         for (let loadBtn of this.saveListHTML.querySelectorAll('.save')) {
             const id = loadBtn.querySelector('.id').textContent
             loadBtn.addEventListener('click', (event) => {
-                this.loadFromLocalStorage(id)
+                this.invokeConfirmationModal().then(
+                    isConfirmed=>{
+                        if(isConfirmed) this.loadFromLocalStorage(id)
+                    }
+                )
             })
             loadBtn.querySelector('.deleteSaveBtn').addEventListener('click', (event) => {
                 event.stopPropagation()
@@ -185,6 +224,7 @@ class Board {
 
     refreshMenu() {
         this.displaySaves()
+        this.addHandlersToNewGameBtn()
         this.addHandlersToLoadBtns()
         this.addHandlersToSaveBtns()
     }

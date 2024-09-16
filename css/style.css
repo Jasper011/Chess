@@ -32,6 +32,39 @@ body {
       margin: 0 auto;
       pointer-events: none; }
 
+.confirmModal {
+  border: 1px solid black;
+  width: 300px;
+  height: 100px;
+  border-radius: 12px;
+  background-color: #b7b7b7;
+  position: absolute;
+  padding: 20px;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); }
+  .confirmModal .confirmAnswers {
+    display: flex;
+    justify-content: space-around; }
+    .confirmModal .confirmAnswers .btn {
+      border: 1px solid black;
+      border-radius: 4px;
+      width: 50px;
+      padding: 10px 0; }
+      .confirmModal .confirmAnswers .btn.yesBtn {
+        background-color: #00FF00; }
+        .confirmModal .confirmAnswers .btn.yesBtn:hover {
+          background-color: #00c700; }
+        .confirmModal .confirmAnswers .btn.yesBtn:active {
+          background-color: #01d201; }
+      .confirmModal .confirmAnswers .btn.noBtn {
+        background-color: #f00; }
+        .confirmModal .confirmAnswers .btn.noBtn:hover {
+          background-color: #c70000; }
+        .confirmModal .confirmAnswers .btn.noBtn:active {
+          background-color: #d20101; }
+
 #absoluteWrapper {
   position: absolute;
   top: 10px;
@@ -194,8 +227,6 @@ body {
     background-color: #b7b7b7; }
     #chessDesk .chessDeskCage.moveHighlight {
       box-shadow: 0 0 101px 100px rgba(0, 255, 19, 0.28) inset; }
-    #chessDesk .chessDeskCage.castlingHighlight {
-      box-shadow: 0 0 101px 100px rgba(255, 230, 0, 0.643) inset; }
     #chessDesk .chessDeskCage.takeHighlight {
       box-shadow: 0 0 101px 100px rgba(255, 0, 19, 0.28) inset; }
     #chessDesk .chessDeskCage:nth-child(2) {

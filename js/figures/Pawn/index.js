@@ -1,13 +1,12 @@
 import { LETTERS } from '../../constants/index.js'
 import { Figure } from '../Figure/index.js'
 
-// import { state } from '../../Board.js';
 
 export class Pawn extends Figure {
     constructor(color, cages, state) {
         super("Pawn", color, cages)
-        this.state = state
         this.cost = 1
+        this.state = state
     }
 
     calcMoves() {
