@@ -2,7 +2,7 @@ import { LETTERS } from '../../constants/index.js'
 import { Figure } from '../Figure/index.js'
 
 
-import {calcBishopMoves} from '../helpers.js'
+import {calcBishopMoves} from '../../helpers.js'
 
 export class Bishop extends Figure {
     constructor(color, cages) {

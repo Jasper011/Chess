@@ -3,7 +3,9 @@ import { whiteFigures, blackFigures } from './games/classic.js';
 import { whiteFigures as whiteFiguresDemo, blackFigures as blackFiguresDemo } from './games/testEndGame.js';
 import { whiteFigures as whiteFiguresPawnDemo, blackFigures as blackFiguresPawnDemo } from './games/testPawnTransform.js';
 
-// import { state } from './Board.js';
+import { Review } from './review.js';
+
+import { deepClone } from './helpers.js';
 
 import { LETTERS, colorTextRussian } from "./constants/index.js";
 
@@ -13,7 +15,8 @@ import {
 
 class Board {
     constructor() {
-        window.state = this
+        window.state = this;
+        this.enemyHighlight = false;
         this.figures = [];
         this.turn = 'black';
         this.figurePositions = {};
@@ -102,10 +105,24 @@ class Board {
     addHandlersToLoadBtns() {
         for (let loadBtn of this.saveListHTML.querySelectorAll('.save')) {
             const id = loadBtn.querySelector('.id').textContent
+            const save = this.getSavesFromLocalStorage().find(save=>save.id==id)
             loadBtn.addEventListener('click', (event) => {
                 this.invokeConfirmationModal().then(
                     isConfirmed=>{
-                        if(isConfirmed) this.loadFromLocalStorage(id)
+                        if(isConfirmed) {
+                            if (loadBtn.classList.contains('readOnly')){
+                                const gameLog = {
+                                    whiteFigures,
+                                    blackFigures,
+                                    movesHistory: save.movesHistory
+                                }
+                                review.removeAllFigures()
+                                const reviewState = new Review(gameLog);
+                                reviewState.startReview()
+                                return
+                            }
+                            this.loadFromLocalStorage(id)
+                        }
                     }
                 )
             })
@@ -140,6 +157,11 @@ class Board {
             const saveHTML = document.createElement('div');
             saveHTML.classList.add('save');
             saveHTML.innerHTML = `<span class="id">${save.id}</span> <span class="moveCount">${save.movesHistory.length} ходов</span><div class="deleteSaveBtn"><img src="img/deleteIcon.png"></div>`
+            if (save.mode == 'read'){
+                saveHTML.classList.add('readOnly')
+                saveHTML.innerHTML = `<span class="id">${save.id}</span><img class="readOnlyIcon" src="img/readOnlyIcon.png"> <span class="moveCount">${save.movesHistory.length} ходов</span><div class="deleteSaveBtn"><img src="img/deleteIcon.png"></div>`
+            }
+            
             this.saveListHTML.append(saveHTML)
         }
         for (let i = 1; i <= 4; i++){
@@ -172,12 +194,42 @@ class Board {
         if (!saves.find(save => save.id == id)) {
             saves.push({
                 id: id,
+                mode:'game',
                 figurePositions: this.figurePositions,
                 movesHistory: this.movesHistory,
                 turn: this.turn
             })
         }
         localStorage.setItem('saves', JSON.stringify(saves))
+    }
+
+    saveForReview(){
+        const saves = this.getSavesFromLocalStorage()
+        if (saves.length >= 4) {
+            console.warn('Максимальное количество сохранений. Удалите одно сохранение, чтобы продолжить!');
+            return
+        }
+        let id;
+
+        for (let i = 1; i<=4; i++){
+            if(!saves.find(save=>save.id==i)){
+                id = i
+                console.log(id);
+                
+                break
+            }
+        }
+        if (!saves.find(save => save.id == id)) {
+            saves.push({
+                id: id,
+                mode: 'read',
+                movesHistory: this.movesHistory,
+                turn: this.turn
+            })
+            localStorage.setItem('saves', JSON.stringify(saves))
+        }
+        
+        this.startGame(whiteFigures, blackFigures)
     }
 
     loadFromLocalStorage(id) {
@@ -198,6 +250,7 @@ class Board {
     }
 
     applyState(newState) {
+        review.removeAllFigures()
         this.cleanHistoyHTML()
         this.movesHistory = []
         this.changeTurnToColor(newState.turn)
@@ -300,6 +353,12 @@ class Board {
         saveForReviewBtn.classList.add('saveForReviewBtn')
         saveForReviewBtn.classList.add('btn')
         saveForReviewBtn.textContent = 'Сохранить для просмотра'
+        saveForReviewBtn.addEventListener('click', ()=>{
+            this.saveForReview()
+            this.refreshMenu()
+            modal.remove();
+            game.classList.remove('hide')
+        })
         modal.append(saveForReviewBtn)
         content.prepend(modal)
     }
@@ -339,6 +398,7 @@ class Board {
             black:0
         }
         content.classList.remove('hide')
+        if (review) review.removeAllFigures()
         state.removeAllFigures()
         this.placeAllFigures(whiteFigures, blackFigures)
         this.cleanHistoyHTML()
@@ -349,10 +409,12 @@ class Board {
         this.historyHTML.innerHTML = ''
     }
 }
+
+new Review({})
+
 const state = new Board();
 
 state.initBoard()
-console.log(state);
 
 
 // TODO:
