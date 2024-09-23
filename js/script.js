@@ -250,6 +250,7 @@ class Board {
     }
 
     applyState(newState) {
+        review.reviewBtns.classList.add('hide')
         review.removeAllFigures()
         this.cleanHistoyHTML()
         this.movesHistory = []
@@ -392,6 +393,7 @@ class Board {
     }
 
     startGame(whiteFigures, blackFigures) {
+        review.reviewBtns.classList.add('hide')
         this.movesHistory = []
         this.score = {
             white: 0,

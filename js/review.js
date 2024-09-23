@@ -10,6 +10,11 @@ export class Review{
         
         this.historyHTML = document.querySelector('#history');
         this.turnSpan = document.querySelector('.turnSpan');
+        this.reviewBtns = document.querySelector('.reviewBtns')
+        if (this.reviewBtns){
+            this.goForwardBtn = this.reviewBtns.querySelector('.goForwardBtn')
+            this.goBackBtn = this.reviewBtns.querySelector('.goBackBtn')
+        }
 
         this.cages = Array.from(this.chessDesk.querySelectorAll('.chessDeskCage'));
         
@@ -32,7 +37,16 @@ export class Review{
         state.removeAllFigures()
         this.initBoard()
         this.placeAllFigures(this.whiteStartPosition, this.blackStartPosition)
+        this.reviewBtns.classList.remove('hide')
+        this.addHandlersToReviewBtns()
         
+    }
+
+
+
+    addHandlersToReviewBtns(){
+        this.goForwardBtn.addEventListener('click', this.stepForward.bind(this))
+        this.goBackBtn.addEventListener('click', this.stepBack.bind(this))
     }
 
     initBoard(){
