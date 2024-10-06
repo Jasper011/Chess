@@ -32,6 +32,11 @@ class Board {
         this.turnSpan = document.querySelector('.turnSpan');
         this.newGameBtn = document.querySelector('.newGameBtn')
         this.saveListHTML = document.querySelector('.saves')
+        this.players = document.querySelectorAll('.player')
+        this.playerNames = {
+            white: 'player1',
+            black: 'player2'
+        }
         this.changeTurn()
 
         this.placeNewWhiteFigure = this.addNewFigureFactory("white");
@@ -44,6 +49,7 @@ class Board {
         this.cages = Array.from(this.chessDesk.querySelectorAll('.chessDeskCage'));
 
     }
+
 
     placeAllFigures(whiteFigures, blackFigures){
         whiteFigures.forEach(([type, place]) => {
@@ -63,6 +69,8 @@ class Board {
             }
         }
         this.refreshMenu()
+        this.refreshScore()
+        this.refreshPlayers()
         this.startGame(whiteFigures, blackFigures)
     }
 
@@ -90,6 +98,56 @@ class Board {
                 modal.remove()
               });
         })
+    }
+
+    addHandlersToPlayers(){
+        for (let player of this.players){
+            const enterName = player.querySelector('.enterNewName')
+            const nameInput = player.querySelector('.nameInput')
+            const nameDiv = player.querySelector('.name')
+
+            const changeBtn = player.querySelector('.changeBtn')
+            const exitBtn = player.querySelector('.exitBtn')
+
+            function exit(){
+                enterName.classList.remove('hide')
+                nameInput.classList.add('hide')
+                changeBtn.classList.add('hide')
+                exitBtn.classList.add('hide')
+                nameInput.value = ''
+            }
+
+            enterName.addEventListener('click', ()=>{
+                enterName.classList.add('hide')
+                nameInput.classList.remove('hide')
+                changeBtn.classList.remove('hide')
+                exitBtn.classList.remove('hide')
+                changeBtn.addEventListener('click', ()=>{
+                    if (nameInput.value.length > 0){
+                        nameDiv.textContent = nameInput.value
+                        this.playerNames[player.classList[1]] = nameInput.value
+                        exit()
+                    }
+                })
+                exitBtn.addEventListener('click', exit)
+            })
+        }
+    }
+
+    clearNames(){
+        for (let player of this.players){
+            const nameDiv = player.querySelector('.name')
+            nameDiv.textContent = ''
+        }
+    }
+
+    refreshPlayers(){
+        for (let player of this.players){
+            const nameDiv = player.querySelector('.name')
+            nameDiv.textContent = this.playerNames[player.classList[1]]
+            const score = player.querySelector('.score')
+            score.textContent = this.score[player.classList[1]]
+        }
     }
 
     addHandlersToNewGameBtn(){
@@ -197,7 +255,8 @@ class Board {
                 mode:'game',
                 figurePositions: this.figurePositions,
                 movesHistory: this.movesHistory,
-                turn: this.turn
+                turn: this.turn,
+                playerNames: this.playerNames
             })
         }
         localStorage.setItem('saves', JSON.stringify(saves))
@@ -210,12 +269,9 @@ class Board {
             return
         }
         let id;
-
         for (let i = 1; i<=4; i++){
             if(!saves.find(save=>save.id==i)){
                 id = i
-                console.log(id);
-                
                 break
             }
         }
@@ -228,7 +284,6 @@ class Board {
             })
             localStorage.setItem('saves', JSON.stringify(saves))
         }
-        
         this.startGame(whiteFigures, blackFigures)
     }
 
@@ -256,6 +311,8 @@ class Board {
         this.movesHistory = []
         this.changeTurnToColor(newState.turn)
         if (newState) {
+            this.playerNames = newState.playerNames
+            this.refreshPlayers()
             for (let pointData of newState.movesHistory) {
                 this.addHistoryPoint(pointData)
             }
@@ -281,6 +338,7 @@ class Board {
         this.addHandlersToNewGameBtn()
         this.addHandlersToLoadBtns()
         this.addHandlersToSaveBtns()
+        this.addHandlersToPlayers()
     }
 
     addHistoryPoint(pointData) {
@@ -330,8 +388,6 @@ class Board {
     }
 
     endGame() {
-        console.trace('end');
-        
         const game = document.querySelector('.gameWrapper')
         game.classList.add('hide')
         const modal = document.createElement('div')
@@ -433,13 +489,15 @@ state.initBoard()
 // 0. + Кнопки для начала игры (и возможно другие) - в целом "главное меню" игры
 // 1. + Восстанавливать предыдущий стейт (из ЛокалСторадж)
 // 2. Задавать имя игрока 1 и игрока 2 (+ дефолтные имена, + писать чей сейчас ход (не цвет, а имя))
-// 3. Придумать минимальный подсчёт очков для финала игры (ходы, фигуры)
+// 3. +- Придумать минимальный подсчёт очков для финала игры (ходы, фигуры)
 // 4. + Несколько слотов для сохранения текущих игр, и возможность загружать их
 // 4.1 + Доработать - после загрузки есть проблемы со стейтом (отображжаемым около доски)
 // 4.2 + Доработать - после сохранения игра наичнается заново (это плохо)
 // 4.3 + Доработать - сохранять в нужный слот, а не следующий в очереди
 // 4.4 Доработать - кнопку удалить сделать так, чтобы нельзя было нажать случайно
-// 5. Режим "посмотреть сохраненную игру" где нам по шагам показывается вся история игры
+// 4.5 Предлагать ввести название сохраненной игры
+// 4.6* Подумать, как сразу же сохранять игру в тот же слот
+// 5. + Режим "посмотреть сохраненную игру" где нам по шагам показывается вся история игры
 // 5.1 Кнопки "назад"-"вперед", кнопка "стоп", кнопка "играть(воспроизводить)" (х1) ускоренная перемотка вперед-назад (х2-х4)
 
 // 6. Добавить опцию "показывать подсказки фигур противника при наведении"
@@ -449,3 +507,17 @@ state.initBoard()
 // Block 3 - сетевая игра
 // 0. Почитать про сервер для игры (веб-сервер, возможно рестАпи)
 // 1. Несколько игроков играют в "комнатах".
+
+// Что не позволяет сделать рокировку (что переключает isCastlingAvailable в false)
+// 0. Если королю кто-то мешает на пути
+// 1. Если король уже ходил (ок)
+// 2. Если одна из ладей ходила (ок)
+// 3. Если Королю находится под атакой (ему сделали шах), но после - можно (isCheck = true) 
+// (проверять, если ли они в доступных ходах фигур противника наш король. Если нет, то isCheck = false)
+// 4. Если королю предстоит прыжок через битое поле (проверять 4 возможных поля, если ли они в доступных ходах фигуро противника)
+// 4.1 Если влево (C1, D1)
+// 4.2 Если вправо (F1, G1)
+
+// Флаг isCastlingAvailable не глобальный в стейте, а просто как сборная часть типа 
+// isCastlingAvailable = isWayFree && !kingWasMoved && !rookWasMoved && !isCheck & !isUnderAtack
+

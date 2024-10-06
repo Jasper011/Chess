@@ -41,6 +41,9 @@ export class Figure {
                 figure.calcMoves()
             }
             this.addHandlers()
+            state.refreshScore()
+            state.refreshPlayers()
+            
             if (oldCoord){
                 state.addHistoryPoint({
                     color:this.color,
@@ -101,7 +104,6 @@ export class Figure {
                         chessDesk.removeEventListener('click', move);
                         this.deleteFigure()
                         attackingFigure.place(move.coord)
-                        state.refreshScore()
                         attackingFigure.figure.classList.remove('active')
                         attackingFigure.isActive = false;
                         attackingFigure.figure.classList.remove('active')
@@ -152,8 +154,6 @@ export class Figure {
             let move = {
                 'coord': coord,
             }
-
-
             if (isCastling && this.type == 'King' && !state.figurePositions[coord]) {
                 move['type'] = 'castling'
                 this.moves.push(move);
@@ -173,10 +173,12 @@ export class Figure {
     }
 
     _toggleMovesHighlight(action) {
-         this.moves.forEach(({coord: moveCord, type: typeOfMove}) => {
-            const cageHtmlELem = this.cages.find(cage => cage.dataset.cageName === moveCord)
-            cageHtmlELem.classList[action](`${typeOfMove}Highlight`)
-        })
+        if (this.color == state.turn || state.enemyHighLight){
+            this.moves.forEach(({ coord: moveCord, type: typeOfMove }) => {
+                const cageHtmlELem = this.cages.find(cage => cage.dataset.cageName === moveCord)
+                cageHtmlELem.classList[action](`${typeOfMove}Highlight`)
+            })
+        }
     }
 
     calcMoves() {

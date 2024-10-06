@@ -2,8 +2,13 @@
 // import { Rook } from "../figures/Rook/index.js";
 
 // console.log(Rook);
-export const LETTERS = Array.from('abcdefgh');
-export const colorTextRussian = {
+type colorText = {
+    white: string;
+    black: string;
+}
+
+export const LETTERS: string[] = Array.from('abcdefgh');
+export const colorTextRussian: colorText = {
     white: 'Белые',
     black: 'Чёрные'
 }

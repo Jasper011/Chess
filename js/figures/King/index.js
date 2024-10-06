@@ -23,7 +23,7 @@ import { whiteFigures, blackFigures } from "../../games/classic.js";
 export class King extends Figure {
     constructor(color, cages, state) {
         super("King", color, cages)
-        this.wasMoved = false;
+        this.wasMoved = false; // TODO: убрать, т.к. есть у класса Фигура
         this.state = state
         this.cost = 0
     }
