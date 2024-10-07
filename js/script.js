@@ -69,6 +69,7 @@ class Board {
             }
         }
         this.refreshMenu()
+        this.addHandlersToNewGameBtn()
         this.refreshScore()
         this.refreshPlayers()
         this.startGame(whiteFigures, blackFigures)
@@ -335,7 +336,6 @@ class Board {
 
     refreshMenu() {
         this.displaySaves()
-        this.addHandlersToNewGameBtn()
         this.addHandlersToLoadBtns()
         this.addHandlersToSaveBtns()
         this.addHandlersToPlayers()

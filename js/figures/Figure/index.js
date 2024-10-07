@@ -4,9 +4,7 @@ import { LETTERS } from '../../constants/index.js'
 
 export class Figure {
     // TODO: переделать чтобы конструктор принимал объект
-    constructor(type, color, cages) {
-        // console.log(state);
-        
+    constructor({type, color, cages}) {
         state.figures.push(this);
         this.wasMoved = false;
         this.coord = undefined;

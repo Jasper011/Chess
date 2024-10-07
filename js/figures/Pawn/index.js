@@ -4,7 +4,7 @@ import { Figure } from '../Figure/index.js'
 
 export class Pawn extends Figure {
     constructor(color, cages, state) {
-        super("Pawn", color, cages)
+        super({type:"Pawn", color:color, cages:cages})
         this.cost = 1
         this.state = state
     }

@@ -3,7 +3,7 @@ import { Figure } from '../Figure/index.js'
 
 export class Knight extends Figure {
     constructor(color, cages) {
-        super("Knight", color, cages)
+        super({type:"Knight", color:color, cages:cages})
         this.cost = 3;
     }
 
