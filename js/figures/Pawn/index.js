@@ -10,7 +10,6 @@ export class Pawn extends Figure {
     }
 
     calcMoves() {
-
         this.moves = []
         let startLetter = LETTERS.findIndex((el) => el === this.coord[0])
         if (this.color === 'white') {
@@ -23,17 +22,14 @@ export class Pawn extends Figure {
                     this.moves.push({ coord: coord, type: 'take' })
                 }
             })
-            let nextCoord = LETTERS[startLetter] + (+this.coord[1] + 1)
-            if (!state.figurePositions[nextCoord] && Figure.checkValidCoord(nextCoord)) {
-                this.moves.push({ coord: nextCoord, type: 'move' })
+            let nextCoords = [LETTERS[startLetter] + (+this.coord[1] + 1), LETTERS[startLetter] + (+this.coord[1] + 2)]
+            if (!state.figurePositions[nextCoords[0]] && Figure.checkValidCoord(nextCoords[0])) {
+                this.moves.push({ coord: nextCoords[0], type: 'move' })
             } else {
                 return
             }
-            nextCoord = LETTERS[startLetter] + (+this.coord[1] + 2)
-            if (!state.figurePositions[nextCoord] && +this.coord[1] == 2) {
-                this.moves.push({ coord: nextCoord, type: 'move' })
-            } else {
-                return
+            if (!state.figurePositions[nextCoords[1]] && !this.wasMoved) {
+                this.moves.push({ coord: nextCoords[1], type: 'move' })
             }
             
         } else if (this.color === 'black') {
@@ -46,17 +42,14 @@ export class Pawn extends Figure {
                     this.moves.push({ coord: coord, type: 'take' })
                 }
             })
-            let nextCoord = LETTERS[startLetter] + (+this.coord[1] - 1)
-            if (!state.figurePositions[nextCoord] && Figure.checkValidCoord(nextCoord)) {
-                this.moves.push({ coord: nextCoord, type: 'move' })
+            let nextCoords = [LETTERS[startLetter] + (+this.coord[1] - 1), LETTERS[startLetter] + (+this.coord[1] - 2)]
+            if (!state.figurePositions[nextCoords[0]] && Figure.checkValidCoord(nextCoords[0])) {
+                this.moves.push({ coord: nextCoords[0], type: 'move' })
             } else {
                 return
             }
-            nextCoord = LETTERS[startLetter] + (+this.coord[1] - 2)
-            if (!state.figurePositions[nextCoord] && +this.coord[1] == 7) {
-                this.moves.push({ coord: nextCoord, type: 'move' })
-            } else {
-                return
+            if (!state.figurePositions[nextCoords[1]] && !this.wasMoved) {
+                this.moves.push({ coord: nextCoords[1], type: 'move' })
             }
         }
     }
