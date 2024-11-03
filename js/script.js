@@ -154,7 +154,7 @@ class Board {
                                     movesHistory: save.movesHistory
                                 };
                                 review.removeAllFigures();
-                                const reviewState = new Review(gameLog);
+                                const reviewState = new Review(gameLog.movesHistory, gameLog.whiteFigures, gameLog.blackFigures);
                                 reviewState.startReview();
                                 return;
                             }
@@ -446,8 +446,7 @@ class Board {
             this.historyHTML.innerHTML = '';
     }
 }
-const review = null;
-new Review({});
+const review = new Review([], whiteFigures, blackFigures);
 const content = document.getElementById('content');
 const state = new Board();
 state.initBoard();
