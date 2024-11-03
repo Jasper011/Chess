@@ -61,7 +61,7 @@ export class Figure {
     static checkValidCoord(coord) {
         return coord.length == 2 && LETTERS.includes(coord[0]) && +coord[1] > 0 && +coord[1] < 9;
     }
-    deleteFigure() {
+    deleteFigure(mode) {
         this.figure.remove();
         this._toggleMovesHighlight('remove');
         // if (this.coord) delete state.figurePositions[this.coord];
