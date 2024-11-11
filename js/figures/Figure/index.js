@@ -135,7 +135,6 @@ export class Figure {
             }.bind(this));
         }
     }
-    // TODO: подумать над входными и выходнынми параметрами, сделать рефакторинг (иф не нужен?)
     _checkMove(coord, isCastling) {
         let isStop = false;
         let move = {

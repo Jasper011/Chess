@@ -174,8 +174,9 @@ class Board {
     addHandlersToSaveBtns() {
         for (let saveBtn of document.querySelectorAll('.emptySaveCage')) {
             saveBtn.addEventListener('click', (event) => {
-                if (event.target)
-                    state.saveToLocalStorage(event.target.dataset.id); //TODO: Понятно, в чем ошибка, но не понятно, что с ней делать
+                const target = event.target;
+                if (target)
+                    state.saveToLocalStorage(target.dataset.id); //TODO: Понятно, в чем ошибка, но не понятно, что с ней делать
                 this.refreshMenu();
             });
         }
@@ -245,14 +246,14 @@ class Board {
             console.warn('Максимальное количество сохранений. Удалите одно сохранение, чтобы продолжить!');
             return;
         }
-        let id;
+        let id = 0;
         for (let i = 1; i <= 4; i++) {
-            if (!saves.find(save => save.id == i)) {
+            if (!saves.find((save) => save.id == i)) {
                 id = i;
                 break;
             }
         }
-        if (!saves.find(save => save.id == id)) {
+        if (!saves.find((save) => save.id == id)) {
             saves.push({
                 id: id,
                 mode: 'read',
@@ -279,7 +280,7 @@ class Board {
     }
     applyState(newState) {
         if (review)
-            review.reviewBtns.classList.add('hide');
+            review.reviewBtns?.classList.add('hide');
         if (review)
             review.removeAllFigures();
         this.cleanHistoyHTML();
@@ -427,13 +428,14 @@ class Board {
     }
     startGame(whiteFigures, blackFigures) {
         if (review)
-            review.reviewBtns.classList.add('hide');
+            review.reviewBtns?.classList.add('hide');
         this.movesHistory = [];
         this.score = {
             white: 0,
             black: 0
         };
-        content.classList.remove('hide');
+        const content = document.getElementById('content');
+        content?.classList.remove('hide');
         if (review)
             review.removeAllFigures();
         state.removeAllFigures();

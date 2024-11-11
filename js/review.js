@@ -63,12 +63,12 @@ export class Review {
         const move = this.movesHistory[this.step];
         if (!move)
             return;
-        const figure = this.getFigureByCoord(move.current); // TODO: Не понятно, что значит. Тип '{}'?
+        const figure = this.getFigureByCoord(move.current);
         if (figure)
             figure.place(move.prev);
     }
     stepForward() {
-        if (this.step == this.movesHistory.length - 1)
+        if (this.step == this.movesHistory.length)
             return;
         const move = this.movesHistory[this.step];
         if (!move)
