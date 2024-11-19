@@ -58,6 +58,23 @@ export class Figure {
             console.error("Стейт уже занят");
         }
     }
+    take(coord) {
+        const atackMove = this.moves.find(move => move.coord === coord && move.type === 'take');
+        if (atackMove) {
+            const attackedFigure = state.getFigureByCoord(atackMove.coord);
+            if (attackedFigure.type == 'King') {
+                attackedFigure.deleteFigure();
+                return;
+            }
+            // chessDesk.removeEventListener('click', move);
+            attackedFigure.deleteFigure();
+            this.place(atackMove.coord);
+            this.figure.classList.remove('active');
+            this.isActive = false;
+            this.figure.classList.remove('active');
+            state.changeTurn();
+        }
+    }
     static checkValidCoord(coord) {
         return coord.length == 2 && LETTERS.includes(coord[0]) && +coord[1] > 0 && +coord[1] < 9;
     }
@@ -90,21 +107,7 @@ export class Figure {
                     if (!attackingFigure) {
                         return;
                     }
-                    const attackMoves = attackingFigure.moves;
-                    const move = attackMoves.find(move => move.coord === this.coord && move.type === 'take');
-                    if (move) {
-                        if (this.type == 'King') {
-                            this.deleteFigure();
-                            return;
-                        }
-                        chessDesk.removeEventListener('click', move);
-                        this.deleteFigure();
-                        attackingFigure.place(move.coord);
-                        attackingFigure.figure.classList.remove('active');
-                        attackingFigure.isActive = false;
-                        attackingFigure.figure.classList.remove('active');
-                        state.changeTurn();
-                    }
+                    attackingFigure.take(this.coord);
                 }
             });
             chessDesk.addEventListener('click', function move(e) {

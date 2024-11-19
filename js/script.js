@@ -34,6 +34,10 @@ class Board {
         }
         this.cages = Array.from(this.chessDesk.querySelectorAll('.chessDeskCage'));
     }
+    getFigureByCoord(coord) {
+        const figure = this.figures.find(figure => figure.coord == coord);
+        return figure;
+    }
     placeAllFigures(whiteFigures, blackFigures) {
         whiteFigures.forEach(([type, place]) => {
             this.placeNewWhiteFigure(type, place);
@@ -154,8 +158,8 @@ class Board {
                                     movesHistory: save.movesHistory
                                 };
                                 review.removeAllFigures();
-                                const reviewState = new Review(gameLog.movesHistory, gameLog.whiteFigures, gameLog.blackFigures);
-                                reviewState.startReview();
+                                review = new Review(gameLog.movesHistory, gameLog.whiteFigures, gameLog.blackFigures);
+                                review.startReview();
                                 return;
                             }
                             if (id)
@@ -176,7 +180,7 @@ class Board {
             saveBtn.addEventListener('click', (event) => {
                 const target = event.target;
                 if (target)
-                    state.saveToLocalStorage(target.dataset.id); //TODO: Понятно, в чем ошибка, но не понятно, что с ней делать
+                    state.saveToLocalStorage(target.dataset.id); //Понятно, в чем ошибка, но не понятно, что с ней делать
                 this.refreshMenu();
             });
         }
@@ -414,9 +418,12 @@ class Board {
             white: 39,
             black: 39
         };
-        for (let figure of this.figures) {
+        let i = 0;
+        while (i < this.figures.length) {
+            const figure = this.figures[i];
+            i++;
             if (!figure.cost)
-                return;
+                continue;
             if (figure.color == 'white') {
                 score.black -= figure.cost;
             }
@@ -429,6 +436,11 @@ class Board {
     startGame(whiteFigures, blackFigures) {
         if (review)
             review.reviewBtns?.classList.add('hide');
+        console.log('remove rev fig call', review.figures.slice());
+        if (review)
+            review.removeAllFigures();
+        console.log('after remove rev fig call');
+        state.removeAllFigures();
         this.movesHistory = [];
         this.score = {
             white: 0,
@@ -436,9 +448,6 @@ class Board {
         };
         const content = document.getElementById('content');
         content?.classList.remove('hide');
-        if (review)
-            review.removeAllFigures();
-        state.removeAllFigures();
         this.placeAllFigures(whiteFigures, blackFigures);
         this.cleanHistoyHTML();
         this.changeTurnToColor('white');
@@ -448,7 +457,7 @@ class Board {
             this.historyHTML.innerHTML = '';
     }
 }
-const review = new Review([], whiteFigures, blackFigures);
+window.review = new Review([], whiteFigures, blackFigures);
 const content = document.getElementById('content');
 const state = new Board();
 state.initBoard();

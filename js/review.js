@@ -24,6 +24,7 @@ export class Review {
         this.figurePositions = {};
         this.figures = [];
         this.movesHistory = movesHistory;
+        this.takeHistory = [];
         this.turn = 'white';
         this.whiteStartPosition = whiteFigures;
         this.blackStartPosition = blackFigures;
@@ -66,6 +67,14 @@ export class Review {
         const figure = this.getFigureByCoord(move.current);
         if (figure)
             figure.place(move.prev);
+        for (let take of this.takeHistory) {
+            if (take.step == this.step) {
+                if (take.color == 'white') {
+                    this.placeWhiteFigure(take.type, take.position);
+                    this.takeHistory.splice(this.takeHistory.indexOf(take), 1);
+                }
+            }
+        }
     }
     stepForward() {
         if (this.step == this.movesHistory.length)
@@ -87,8 +96,10 @@ export class Review {
         });
     }
     removeAllFigures() {
+        console.log('inside remove rev fig', this.figures);
         if (this.figures.length == 0)
             return;
+        console.log('after check');
         let i = this.figures.length - 1;
         while (i >= 0) {
             const figure = this.figures[i];
@@ -129,6 +140,12 @@ class ReviewFigure {
             const figure = review.figures.find(figure => figure.coord == coord);
             if (figure) {
                 figure.deleteFigure();
+                review.takeHistory.push({
+                    step: review.step,
+                    type: figure.type,
+                    color: figure.color,
+                    position: figure.coord,
+                });
             }
         }
         review.figurePositions[coord] = {
