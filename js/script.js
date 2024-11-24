@@ -8,7 +8,7 @@ class Board {
         window.state = this;
         this.enemyHighlight = false;
         this.figures = [];
-        this.turn = 'black';
+        this.turn = ['black', ''];
         this.figurePositions = {};
         this.movesHistory = [];
         this.boardFlipMode = false;
@@ -26,6 +26,7 @@ class Board {
             white: 'player1',
             black: 'player2'
         };
+        this.turn[1] = this.playerNames[this.turn[0]];
         this.changeTurn();
         this.placeNewWhiteFigure = this.addNewFigureFactory("white");
         this.placeNewBlackFigure = this.addNewFigureFactory("black");
@@ -54,6 +55,12 @@ class Board {
                 count++;
             }
         }
+        fetch('http://127.0.0.1:5000/data')
+            .then(response => response.json())
+            .then(data => {
+            console.log(data);
+        })
+            .catch(error => console.error('Error:', error));
         this.refreshMenu();
         this.addHandlersToNewGameBtn();
         this.refreshScore();
@@ -238,7 +245,7 @@ class Board {
                 mode: 'game',
                 figurePositions: this.figurePositions,
                 movesHistory: this.movesHistory,
-                turn: this.turn,
+                turn: this.turn[0],
                 playerNames: this.playerNames
             });
         }
@@ -262,7 +269,7 @@ class Board {
                 id: id,
                 mode: 'read',
                 movesHistory: this.movesHistory,
-                turn: this.turn
+                turn: this.turn[0]
             });
             localStorage.setItem('saves', JSON.stringify(saves));
         }
@@ -289,7 +296,7 @@ class Board {
             review.removeAllFigures();
         this.cleanHistoyHTML();
         this.movesHistory = [];
-        this.changeTurnToColor(newState.turn);
+        this.changeTurnToColor(newState.turn); //TODO:
         if (newState) {
             this.playerNames = newState.playerNames;
             this.refreshPlayers();
@@ -330,21 +337,23 @@ class Board {
     }
     changeTurnToColor(color) {
         if (color == 'white' || color == 'black') {
-            this.turnSpan && this.turnSpan.classList.remove(this.turn);
-            this.turn = color;
-            this.turnSpan && this.turnSpan.classList.add(this.turn);
+            this.turnSpan && this.turnSpan.classList.remove(this.turn[0]);
+            this.turn[0] = color;
+            this.turn[1] = this.playerNames[this.turn[0]];
+            this.turnSpan && this.turnSpan.classList.add(this.turn[0]);
             if (this.turnSpan)
-                this.turnSpan.textContent = colorTextRussian[color];
+                this.turnSpan.textContent = colorTextRussian[color] + `(${this.turn[1]})`;
         }
     }
     changeTurn() {
         if (!this.turnSpan)
             return;
-        this.turnSpan.classList.remove(this.turn);
-        const color = (this.turn === 'white') ? 'black' : 'white';
+        this.turnSpan.classList.remove(this.turn[0]);
+        const color = (this.turn[0] === 'white') ? 'black' : 'white';
         this.turnSpan.classList.add(color);
-        this.turnSpan.textContent = colorTextRussian[color];
-        this.turn = color;
+        this.turn[0] = color;
+        this.turn[1] = this.playerNames[this.turn[0]];
+        this.turnSpan.textContent = colorTextRussian[color] + `(${this.turn[1]})`;
         if (this.boardFlipMode) {
             if (content)
                 content.classList.toggle('flip');
@@ -373,7 +382,7 @@ class Board {
         modal.classList.add('endGameModal');
         modal.innerHTML = `
         <h3>Конец игры!</h3>
-        <p>Победили ${colorTextRussian[this.turn]}</p>
+        <p>Победили ${colorTextRussian[this.turn[0]]}</p>
         `;
         const newGameBtn = document.createElement('div');
         newGameBtn.classList.add('newGameBtn');

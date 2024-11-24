@@ -94,7 +94,7 @@ export class Figure {
                 });
             });
             this.figure.addEventListener('click', e => {
-                if (this.color === state.turn) {
+                if (this.color === state.turn[0]) {
                     for (let figure of state.figures) {
                         figure.isActive = false;
                         figure.figure.classList.remove('active');
@@ -102,7 +102,7 @@ export class Figure {
                     this.figure.classList.add('active');
                     this.isActive = true;
                 }
-                else if (this.color !== state.turn) {
+                else if (this.color !== state.turn[0]) {
                     const attackingFigure = state.figures.find(figure => figure.isActive);
                     if (!attackingFigure) {
                         return;
@@ -161,7 +161,7 @@ export class Figure {
         return isStop;
     }
     _toggleMovesHighlight(action) {
-        if (this.color == state.turn || state.enemyHighLight) {
+        if (this.color == state.turn[0] || state.enemyHighLight) {
             this.moves.forEach(({ coord: moveCord, type: typeOfMove }) => {
                 const cageHtmlELem = this.cages.find(cage => cage.dataset.cageName === moveCord);
                 cageHtmlELem && cageHtmlELem.classList[action](`${typeOfMove}Highlight`);
