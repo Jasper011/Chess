@@ -73,6 +73,10 @@ export class Review {
                     this.placeWhiteFigure(take.type, take.position);
                     this.takeHistory.splice(this.takeHistory.indexOf(take), 1);
                 }
+                else {
+                    this.placeBlackFigure(take.type, take.position);
+                    this.takeHistory.splice(this.takeHistory.indexOf(take), 1);
+                }
             }
         }
     }

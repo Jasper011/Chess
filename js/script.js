@@ -55,12 +55,6 @@ class Board {
                 count++;
             }
         }
-        fetch('http://127.0.0.1:5000/data')
-            .then(response => response.json())
-            .then(data => {
-            console.log(data);
-        })
-            .catch(error => console.error('Error:', error));
         this.refreshMenu();
         this.addHandlersToNewGameBtn();
         this.refreshScore();
@@ -155,7 +149,7 @@ class Board {
                     return;
                 const id = loadBtn.querySelector('.id').textContent;
                 const save = this.getSavesFromLocalStorage().find(save => save.id == id);
-                loadBtn.addEventListener('click', (event) => {
+                loadBtn.addEventListener('click', () => {
                     this.invokeConfirmationModal().then(isConfirmed => {
                         if (isConfirmed) {
                             if (loadBtn.classList.contains('readOnly')) {
@@ -174,11 +168,13 @@ class Board {
                         }
                     });
                 });
-                loadBtn.querySelector('.deleteSaveBtn').addEventListener('click', (event) => {
+                loadBtn.querySelector('.deleteSaveBtn')?.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    if (id)
-                        this.removeSaveFromLocalStorage(id);
-                    this.refreshMenu();
+                    this.invokeConfirmationModal().then(isConfirmed => {
+                        if (isConfirmed && id)
+                            this.removeSaveFromLocalStorage(id);
+                        this.refreshMenu();
+                    });
                 });
             }
     }
@@ -296,7 +292,7 @@ class Board {
             review.removeAllFigures();
         this.cleanHistoyHTML();
         this.movesHistory = [];
-        this.changeTurnToColor(newState.turn); //TODO:
+        this.changeTurnToColor(newState.turn);
         if (newState) {
             this.playerNames = newState.playerNames;
             this.refreshPlayers();
@@ -377,6 +373,7 @@ class Board {
         const game = document.querySelector('.gameWrapper');
         if (!game)
             return;
+        this.cleanHistoyHTML();
         game.classList.add('hide');
         const modal = document.createElement('div');
         modal.classList.add('endGameModal');
