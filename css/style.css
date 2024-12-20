@@ -33,19 +33,27 @@ body {
       pointer-events: none; }
 
 .reviewBtns {
-  width: 110px;
+  width: 70%;
   display: flex;
   margin: 0 auto;
   gap: 10px; }
   .reviewBtns .btn {
     box-sizing: border-box;
     text-align: center;
-    padding: 14px 0;
+    padding: 14px;
     width: 50px;
     height: 50px;
     background-color: #8b8b8b;
     border-radius: 12px;
     border: 1px solid black; }
+    .reviewBtns .btn img {
+      width: 100%;
+      height: auto; }
+    .reviewBtns .btn:hover {
+      background-color: #606060; }
+    .reviewBtns .btn.blocked {
+      pointer-events: none;
+      background-color: #c1c1c1; }
 
 .confirmModal {
   border: 1px solid black;
@@ -120,14 +128,13 @@ body {
 
 .gameWrapper {
   display: flex;
-  width: 100%;
-  margin-right: 50px; }
+  width: 100%; }
 
 .menuWrapper {
   padding: 24px;
   background-color: #b7b7b7;
   border-radius: 12px;
-  width: 50%; }
+  width: 30%; }
   .menuWrapper h3 {
     text-align: center; }
   .menuWrapper .newGameBtn {
@@ -191,8 +198,11 @@ body {
 
 #content {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   position: relative;
   width: 60%;
+  height: 80vh;
   transition: 0.3s all ease;
   margin: 0 auto;
   color: white; }
@@ -228,7 +238,7 @@ body {
     #content .player.white {
       bottom: -50px; }
   #content .endGameModal {
-    margin-right: 20px;
+    height: 80%;
     width: 50%;
     border-radius: 16px;
     padding: 30px;

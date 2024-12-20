@@ -16,6 +16,8 @@ export class Review {
         this.reviewBtns = document.querySelector('.reviewBtns');
         if (this.reviewBtns) {
             this.goForwardBtn = this.reviewBtns.querySelector('.goForwardBtn');
+            this.playBtn = this.reviewBtns.querySelector('.playBtn');
+            this.stopBtn = this.reviewBtns.querySelector('.stopBtn');
             this.goBackBtn = this.reviewBtns.querySelector('.goBackBtn');
         }
         if (!this.chessDesk)
@@ -41,10 +43,9 @@ export class Review {
         this.addHandlersToReviewBtns();
     }
     addHandlersToReviewBtns() {
-        if (this.goForwardBtn)
-            this.goForwardBtn.addEventListener('click', this.stepForward.bind(this));
-        if (this.goBackBtn)
-            this.goBackBtn.addEventListener('click', this.stepBack.bind(this));
+        this.goForwardBtn?.addEventListener('click', this.stepForward.bind(this));
+        this.goBackBtn?.addEventListener('click', this.stepBack.bind(this));
+        this.playBtn?.addEventListener('click', this.playGame.bind(this));
     }
     initBoard() {
         let count = 0;
@@ -64,8 +65,9 @@ export class Review {
         const move = this.movesHistory[this.step];
         if (!move)
             return;
+        this.removeHistoryPoint();
         const figure = this.getFigureByCoord(move.current);
-        if (figure)
+        if (figure && move.prev)
             figure.place(move.prev);
         for (let take of this.takeHistory) {
             if (take.step == this.step) {
@@ -84,12 +86,45 @@ export class Review {
         if (this.step == this.movesHistory.length)
             return;
         const move = this.movesHistory[this.step];
+        this.addHistoryPoint(move);
         if (!move)
             return;
-        const figure = this.getFigureByCoord(move.prev);
+        let figure;
+        if (move.prev)
+            figure = this.getFigureByCoord(move.prev);
         if (figure)
             figure.place(move.current);
         this.step++;
+    }
+    playGame() {
+        this.goBackBtn?.classList.add('blocked');
+        this.goForwardBtn?.classList.add('blocked');
+        this.playBtn?.classList.add('hide');
+        this.stopBtn?.classList.remove('hide');
+        const intervalId = setInterval(() => {
+            this.stepForward();
+            console.log('forward');
+        }, 1500);
+        this.stopBtn?.addEventListener('click', () => {
+            clearInterval(intervalId);
+            this.goBackBtn?.classList.remove('blocked');
+            this.goForwardBtn?.classList.remove('blocked');
+            this.playBtn?.classList.remove('hide');
+            this.stopBtn?.classList.add('hide');
+        });
+    }
+    addHistoryPoint(pointData) {
+        const point = document.createElement('div');
+        point.classList.add('historyPoint');
+        point.innerHTML = `<span class="moveNum">${this.movesHistory.length}.</span>
+        <img src="img/${pointData.figureType.toLowerCase()}.png" class="figureImg ${pointData.color}">
+        <span class="moves">${pointData.prev}-${pointData.current}</span>`;
+        if (this.historyHTML)
+            this.historyHTML.append(point);
+    }
+    removeHistoryPoint() {
+        if (this.historyHTML)
+            this.historyHTML.lastElementChild?.remove();
     }
     placeAllFigures(whiteFigures, blackFigures) {
         whiteFigures.forEach(([type, place]) => {
