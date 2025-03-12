@@ -8,7 +8,7 @@ import { LETTERS } from '../../constants/index.js';
 // const state: State = window.state
 const chessDesk = window.chessDesk;
 export class Figure {
-    constructor({ type, color, cages }) {
+    constructor({ type, color, cages}) {
         _Figure_instances.add(this);
         state.figures.push(this);
         this.wasMoved = false;
@@ -23,7 +23,7 @@ export class Figure {
     _create() {
         this.figure = document.createElement('div');
         this.figure.classList.add('figure', this.type, this.color);
-        this.figure.innerHTML = `<img src="img/${this.type.toLowerCase()}.png" alt="img/${this.type.toLowerCase()}.png">`;
+        this.figure.innerHTML = `<img src="../../img/${this.type.toLowerCase()}.png" alt="../../img/${this.type.toLowerCase()}.png">`;
     }
     place(coord, isplace) {
         if (!state.figurePositions[coord]) {

@@ -407,3 +407,176 @@ body {
   .rightIndexNum {
     height: 80px;
     line-height: 80px; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 0;
+  }
+  
+  #container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+  }
+  
+  #controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+  }
+  
+  #controls .buttons {
+      display: flex;
+      align-content: stretch;
+      align-content: flex-end;
+      flex-direction: column-reverse;
+      flex-wrap: wrap;
+      width: 40%;
+  }
+  
+  #controls input,
+  #controls button {
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      outline: none;
+  }
+  
+  #controls button {
+      background: #4caf50;
+      width: 60%;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+  }
+  
+  #controls button:hover {
+      background: #45a049;
+  }
+  
+  #room-list {
+      margin-top: 20px;
+  }
+  
+  #room-list h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+  }
+  
+  #rooms {
+      list-style: none;
+      padding: 0;
+  }
+  
+  #rooms li {
+      background: #ffffff;
+      color: #333;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  #rooms li:hover {
+      background: #f0f0f0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  #chat {
+      margin-top: 20px;
+      height: 70vh;
+      display: flex
+  ;
+      flex-direction: column;
+      justify-content: space-between;
+  }
+  
+  h2.chatId {
+      width: 70%;
+      margin: 0 auto;
+  }
+  
+  #messages {
+      height: 100%;
+      width: 70%;
+      margin: 0 auto;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      padding: 30px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      box-sizing: border-box;
+  }
+  
+  .controls {
+      width: 70%;
+      margin: 0 auto;
+      padding: 0 50px;
+  
+  }
+  
+  #message-input {
+      width: 75%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      outline: none;
+  }
+  
+  #send-message,
+  #leave-room {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+  }
+  
+  #send-message {
+      background: #007bff;
+      color: white;
+      margin-bottom: 10px;
+  }
+  
+  #send-message:hover {
+      background: #0056b3;
+  }
+  
+  #leave-room {
+      background: #ff4d4d;
+      color: white;
+  }
+  
+  #leave-room:hover {
+      background: #e60000;
+  }
+
+  
+.roomCard {
+  cursor: pointer;
+}
+
+.roomCard .deleteButton {
+  margin-left: 10px;
+}
+

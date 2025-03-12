@@ -135,10 +135,8 @@ export class Review {
         });
     }
     removeAllFigures() {
-        console.log('inside remove rev fig', this.figures);
         if (this.figures.length == 0)
             return;
-        console.log('after check');
         let i = this.figures.length - 1;
         while (i >= 0) {
             const figure = this.figures[i];

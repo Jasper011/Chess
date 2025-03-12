@@ -1,3 +1,4 @@
 {
-    "compilets.config.outDirectory": "js"
+    "compilets.config.outDirectory": "js",
+    "liveServer.settings.port": 5501
 }
